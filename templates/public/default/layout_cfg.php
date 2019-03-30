@@ -1,0 +1,34 @@
+<?php
+return array(
+	'columns'=>3,
+	'items'=>array(
+		'top-blocks'=>array(
+			'colspan'=>3,
+			'isElContainer'=>true,
+            'width'=>600,
+            'height'=>80,
+			'html'=>''
+		),
+        'left-blocks'=>array(
+            'isElContainer'=>true,
+            'width'=>200,
+            'height'=>200
+        ),
+		'content'=>array(
+			'isElContainer'=>false,
+		    'width'=>200,
+            'height'=>200
+		),
+		'right-blocks'=>array(
+			'isElContainer'=>true,
+		    'width'=>200,
+            'height'=>200
+		),
+		'bottom-blocks'=>array(
+			'colspan'=>3,
+			'isElContainer'=>true,
+		    'width'=>600,
+            'height'=>80,
+		)
+	 )
+);

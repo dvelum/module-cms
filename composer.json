@@ -1,0 +1,25 @@
+{
+  "name": "dvelum/module-cms",
+  "version": "3.0.0-dev",
+  "type": "dvelum-module",
+  "description": "CMS module for DVelum",
+  "keywords": ["dvelum","cms"],
+  "homepage": "https://github.com/dvelum/module-cms",
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Kirill Yegorov",
+      "email": "kirill@dvelum.com",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/dvelum/module-cms/issues",
+    "source": "https://github.com/dvelum/module-cms"
+  },
+  "require": {
+    "php":">=7.2",
+    "oomphinc/composer-installers-extender": "^1.1",
+    "dvelum/dvelum": ">=2.0.0"
+  }
+}
