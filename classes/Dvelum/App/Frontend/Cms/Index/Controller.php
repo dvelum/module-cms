@@ -21,16 +21,24 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Frontend\Cms\Index;
 
+use Dvelum\App\BlockManager;
 use \Dvelum\App\Frontend\Cms;
+use Dvelum\Config;
+use Dvelum\Lang;
+use Dvelum\Orm\Model;
+use Dvelum\Request;
+use Dvelum\Resource;
+use Dvelum\Response;
+use Dvelum\Service;
 
 class Controller extends Cms\Controller
 {
     /**
-     * @var ConfigInterface
+     * @var Config\ConfigInterface
      */
     protected $frontendConfig;
     /**
-     * @var Lang
+     * @var Lang\Dictionary
      */
     protected $lang;
 
@@ -57,7 +65,7 @@ class Controller extends Cms\Controller
         $page->setTemplatesPath('public/');
 
         /**
-         * @var App\BlockManager $blockManager
+         * @var BlockManager $blockManager
          */
         $blockManager = Service::get('blockManager');
 

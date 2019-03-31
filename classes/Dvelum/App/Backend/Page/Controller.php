@@ -61,6 +61,7 @@ class Controller extends Backend\Ui\Controller
         return 'Page';
     }
 
+
     /**
      * Get controller configuration
      * @return ConfigInterface
@@ -91,8 +92,15 @@ class Controller extends Backend\Ui\Controller
     {
         parent::indexAction();
 
-        $this->resource->addJs('/resources/dvelum-module-cms/BlocksPanel.js', 3);
-        $this->resource->addJs('/resources/dvelum-module-cms/Page.js', 3);
+        $this->resource->addJs('/resources/dvelum-module-cms/js/BlocksPanel.js', 3);
+        $this->resource->addJs('/resources/dvelum-module-cms/js/Page.js', 3);
+        $this->resource->addJs('/resources/dvelum-module-cms/js/crud/page.js', 4);
+
+        /**
+         * @var \Model_Medialib $mediaModel
+         */
+        $mediaModel = Model::factory('Medialib');
+        $mediaModel->includeScripts($this->resource);
 
         $moduleManager = new \Modules_Manager_Frontend();
 
@@ -642,8 +650,8 @@ class Controller extends Backend\Ui\Controller
         // $moduleCfg = $modulesConfig->get($this->getModule());
 
         $projectData = [];
-        $projectData['includes']['js'][] = '/resources/dvelum-module-cms/BlocksPanel.js';
-        $projectData['includes']['js'][] = '/resources/dvelum-module-cms/Page.js';
+        $projectData['includes']['js'][] = '/resources/dvelum-module-cms/js/BlocksPanel.js';
+        $projectData['includes']['js'][] = '/resources/dvelum-module-cms/js/Page.js';
 
         /*
          * Get module codes

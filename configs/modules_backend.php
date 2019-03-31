@@ -8,6 +8,7 @@
             'designer' => '',
             'in_menu' => true,
             'icon' => 'i/system/icons/blocks.png',
+            ),
     'Medialib' =>
         array (
             'id' => 'Medialib',
@@ -47,6 +48,5 @@
             'designer' => '',
             'in_menu' => true,
             'icon' => 'i/system/icons/pages.png',
-        ),
-    )
+            ),
 );

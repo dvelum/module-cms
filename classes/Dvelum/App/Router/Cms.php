@@ -31,7 +31,7 @@ use Dvelum\App\Session\User;
 /**
  * Back office
  */
-class Module extends Router
+class Cms extends Router
 {
     const CACHE_KEY_ROUTES = 'Frontend_Routes';
 

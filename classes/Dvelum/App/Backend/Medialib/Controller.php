@@ -76,6 +76,19 @@ class Controller extends Backend\Ui\Controller
         }
     }
 
+    public function indexAction()
+    {
+        parent::indexAction();
+
+        /**
+         * @var \Model_Medialib $mediaModel
+         */
+        $mediaModel = Model::factory('Medialib');
+        $mediaModel->includeScripts($this->resource);
+
+        $this->resource->addJs('/resources/dvelum-module-cms/js/crud/medialib.js');
+    }
+
     /**
      * Upload images to media library
      */
@@ -335,15 +348,15 @@ class Controller extends Backend\Ui\Controller
     public function compileAction()
     {
         $sources = array(
-            'js/app/system/medialib/Category.js',
-            'js/app/system/medialib/Panel.js',
-            'js/app/system/medialib/Models.js',
-            'js/app/system/medialib/FileUploadWindow.js',
-            'js/app/system/medialib/ImageSizeWindow.js',
-            'js/app/system/medialib/SelectMediaItemWindow.js',
-            'js/app/system/medialib/ItemField.js',
-            'js/app/system/medialib/EditWindow.js',
-            'js/app/system/medialib/CropWindow.js'
+            'resources/dvelum-module-cms/js/medialib/Category.js',
+            'resources/dvelum-module-cms/js/medialib/Panel.js',
+            'resources/dvelum-module-cms/js/medialib/Models.js',
+            'resources/dvelum-module-cms/js/medialib/FileUploadWindow.js',
+            'resources/dvelum-module-cms/js/medialib/ImageSizeWindow.js',
+            'resources/dvelum-module-cms/js/medialib/SelectMediaItemWindow.js',
+            'resources/dvelum-module-cms/js/medialib/ItemField.js',
+            'resources/dvelum-module-cms/js/medialib/EditWindow.js',
+            'resources/dvelum-module-cms/js/medialib/CropWindow.js'
         );
 
         if (!$this->appConfig->get('development')) {

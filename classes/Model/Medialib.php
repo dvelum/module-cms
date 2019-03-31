@@ -191,18 +191,18 @@ class Model_Medialib extends Model
         if ($editor === 'tinymce') {
             $resource->addJs('/js/lib/tiny_mce/tiny_mce.js', 0, true);
             $resource->addJs('/js/lib/ext_ux/Ext.ux.TinyMCE.js', 1, true);
-            $resource->addJs('/js/app/system/medialib/HtmlPanel_tinymce.js', 3);
+            $resource->addJs('/resources/dvelum-module-cms/js/medialib/HtmlPanel_tinymce.js', 3);
         } elseif ($editor === 'ckeditor') {
             $resource->addJs('/js/lib/ckeditor/ckeditor.js', 100, true, 'external');
             $resource->addJs('/js/lib/ext_ux/ckplugin.js', 1, true);
-            $resource->addJs('/js/app/system/medialib/HtmlPanel_ckeditor.js', 3, false);
+            $resource->addJs('/resources/dvelum-module-cms/js/medialib/HtmlPanel_ckeditor.js', 3, false);
         }
 
         // $resource->addJs('/js/lib/ext_ux/AjaxFileUpload.js',1,false);
         $resource->addJs('/js/app/system/SearchPanel.js', 1);
         $resource->addJs('/js/lib/ext_ux/AjaxFileUpload.js', 1);
         $resource->addJs('/js/app/system/ImageField.js', 1);
-        $resource->addJs('/js/app/system/Medialib.js?v=' . $version, 2);
+        $resource->addJs('/resources/dvelum-module-cms/js/Medialib.js?v=' . $version, 2);
         $resource->addJs('/js/lib/jquery.js', 1 , true, 'external');
         $resource->addJs('/js/lib/jquery.Jcrop.min.js', 2, true, 'external');
 
