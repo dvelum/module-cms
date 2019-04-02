@@ -21,6 +21,7 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Router;
 
+use Dvelum\App\Auth;
 use Dvelum\App\Router;
 use Dvelum\Config;
 use Dvelum\Request;
@@ -71,6 +72,10 @@ class Cms extends Router
         //$cacheManager = new \Cache_Manager();
         //$cache = $cacheManager->get('data');
 
+
+       $auth = new Auth($request, $this->appConfig);
+       $auth->auth();
+
         if ($pageVersion && empty($request->getPart(1))) {
             $user = User::factory();
             if ($user->isAuthorized() && $user->isAdmin()) {
@@ -116,11 +121,6 @@ class Cms extends Router
      */
     public function runController(string $controller, ?string $action, Request $request, Response $response): void
     {
-        if ((strpos('Backend_', $controller) === 0)) {
-            $response->redirect('/');
-            return;
-        }
-
         parent::runController($controller, $action, $request, $response);
     }
 

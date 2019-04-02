@@ -21,70 +21,11 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Frontend\Cms\Index;
 
-use Dvelum\App\BlockManager;
 use \Dvelum\App\Frontend\Cms;
-use Dvelum\Config;
-use Dvelum\Lang;
-use Dvelum\Orm\Model;
-use Dvelum\Request;
-use Dvelum\Resource;
-use Dvelum\Response;
-use Dvelum\Service;
 
 class Controller extends Cms\Controller
 {
-    /**
-     * @var Config\ConfigInterface
-     */
-    protected $frontendConfig;
-    /**
-     * @var Lang\Dictionary
-     */
-    protected $lang;
+    public function indexAction(){
 
-    public function __construct(Request $request, Response $response)
-    {
-        $this->frontendConfig = Config::storage()->get('frontend.php');
-        $this->lang = Lang::lang();
-        parent::__construct($request, $response);
-    }
-
-    /**
-     * Show Page.
-     * Running this method initiates rendering of templates and sending of HTML
-     * data.
-     * @return void
-     */
-    public function showPage(): void
-    {
-        header('Content-Type: text/html; charset=utf-8');
-
-        $vers = $this->request->get('vers', 'int', false);
-
-        $page = \Page::getInstance();
-        $page->setTemplatesPath('public/');
-
-        /**
-         * @var BlockManager $blockManager
-         */
-        $blockManager = Service::get('blockManager');
-
-        if ($vers) {
-            $blockManager->disableCache();
-        }
-
-        if ($page->show_blocks) {
-            $blockManager->init($page->id, $page->default_blocks, $vers);
-        }
-
-        $layoutPath = $page->getThemePath() . 'layout.php';
-        $this->render($layoutPath, [
-            'development' => $this->appConfig->get('development'),
-            'page' => $page,
-            'path' => $page->getThemePath(),
-            'blockManager' => $blockManager,
-            'resource' => Resource::factory(),
-            'pagesTree' => Model::factory('Page')->getTree()
-        ], false);
     }
 }

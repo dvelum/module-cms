@@ -3,9 +3,9 @@ $page = $this->get('page');
 
 $resource = $this->get('resource');
 
-$resource->addCss('/css/public/main/reset.css' ,0);
-$resource->addCss('/css/public/main/style.css' ,100);
-$resource->addJs('/js/app/frontend/common.js',10);
+$resource->addCss('/resources/dvelum-module-cms/css/public/main/reset.css' ,0);
+$resource->addCss('/resources/dvelum-module-cms/css/public/main/style.css' ,100);
+$resource->addJs('/resources/dvelum-module-cms/js/app/frontend/common.js',10);
 $wwwRoot = $this->get('wwwRoot');
 
 /**
@@ -18,11 +18,11 @@ $hasSideLeft = $blockManager->hasBlocks('left-blocks');
 $hasSideRight = $blockManager->hasBlocks('right-blocks');
 
 if($hasSideLeft && !$hasSideRight){
-    $resource->addCss('/css/public/main/side-left.css' ,101);
+    $resource->addCss('/resources/dvelum-module-cms/css/public/main/side-left.css' ,101);
 }elseif(!$hasSideLeft && $hasSideRight){
-    $resource->addCss('/css/public/main/side-right.css' ,101);
+    $resource->addCss('/resources/dvelum-module-cms/css/public/main/side-right.css' ,101);
 }elseif($hasSideLeft && $hasSideRight){
-    $resource->addCss('/css/public/main/side-left-right.css' ,101);
+    $resource->addCss('/resources/dvelum-module-cms/css/public/main/side-left-right.css' ,101);
 }
 
 ?>
