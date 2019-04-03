@@ -252,13 +252,13 @@ class Model_Medialib extends Model
                         $saveName = str_replace($v['ext'], '-' . $typename . $v['ext'], $path);
                         switch($typename){
                             case 'crop' :
-                                Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, true,true);
+                                \Dvelum\Image\Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, true,true);
                                 break;
                             case 'resize_fit':
-                                Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, true, false);
+                                \Dvelum\Image\Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, true, false);
                                 break;
                             case 'resize':
-                                Image_Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, false ,false);
+                                \Dvelum\Image\Resize::resize($path, $thumbSizes[$typename][0], $thumbSizes[$typename][1], $saveName, false ,false);
                                 break;
                         }
                     }
@@ -270,13 +270,13 @@ class Model_Medialib extends Model
 
                     switch($conf['image']['thumb_types'][$k]){
                         case 'crop' :
-                            Image_Resize::resize($path, $item[0], $item[1], $saveName, true,true);
+                            \Dvelum\Image\Resize::resize($path, $item[0], $item[1], $saveName, true,true);
                             break;
                         case 'resize_fit':
-                            Image_Resize::resize($path, $item[0], $item[1], $saveName,true, false);
+                            \Dvelum\Image\Resize::resize($path, $item[0], $item[1], $saveName,true, false);
                             break;
                         case 'resize':
-                            Image_Resize::resize($path, $item[0], $item[1], $saveName, false ,false);
+                            \Dvelum\Image\Resize::resize($path, $item[0], $item[1], $saveName, false ,false);
                             break;
                     }
                 }
@@ -314,7 +314,7 @@ class Model_Medialib extends Model
 
         $path = str_replace('//', '/', $path);
 
-        if (!Image_Resize::cropImage($path, $tmpPath, $x, $y, $w, $h)) {
+        if (!\Dvelum\Image\Resize::cropImage($path, $tmpPath, $x, $y, $w, $h)) {
             return false;
         }
 
@@ -323,7 +323,7 @@ class Model_Medialib extends Model
         }
 
         $saveName = str_replace($srcData['ext'], '-' . $type . $srcData['ext'], $path);
-        if (!\Image_Resize::resize($tmpPath, $thumbSizes[$type][0], $thumbSizes[$type][1], $saveName, true, false)) {
+        if (!\Dvelum\Image\Resize::resize($tmpPath, $thumbSizes[$type][0], $thumbSizes[$type][1], $saveName, true, false)) {
             return false;
         }
 
