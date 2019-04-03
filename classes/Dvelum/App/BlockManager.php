@@ -42,7 +42,7 @@ class BlockManager
      */
     protected $hardCache = false;
     /**
-     * @var \Cache_Interface|bool  $cache
+     * @var CacheInterface|bool  $cache
      */
     protected $cache = false;
 
