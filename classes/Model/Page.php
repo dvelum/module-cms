@@ -31,7 +31,7 @@ class Model_Page extends Model
             return [];
         }
 
-        $ids = Utils::fetchCol('id', $data);
+        $ids = \Dvelum\Utils::fetchCol('id', $data);
         /**
          * @var Model_Vc $vc
          */
@@ -219,7 +219,7 @@ class Model_Page extends Model
         $codes = $this->query()->fields(['id', 'code'])->fetchAll();
 
         if (!empty($codes)) {
-            $codes = Utils::collectData('id', 'code', $codes);
+            $codes = \Dvelum\Utils::collectData('id', 'code', $codes);
         } else {
             $codes = [];
         }
@@ -240,7 +240,7 @@ class Model_Page extends Model
         $ids = $this->query()->fields(['id'])->filters(['default_blocks' => 1])->fetchAll();
 
         if (!empty($ids)) {
-            return Utils::fetchCol('id', $ids);
+            return \Dvelum\Utils::fetchCol('id', $ids);
         } else {
             return [];
         }

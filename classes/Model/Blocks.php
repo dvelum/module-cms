@@ -76,7 +76,7 @@ class Model_Blocks extends Model
     $data = $this->dbSlave->fetchAll($sql);
 
     if(! empty($data))
-      $data = Utils::groupByKey('place', $data);
+      $data = \Dvelum\Utils::groupByKey('place', $data);
 
     return $data;
   }
@@ -110,14 +110,14 @@ class Model_Blocks extends Model
 
         $sql = $this->dbSlave->select()
           ->from($this->table())
-          ->where('`id` IN(' . \Utils::listIntegers($ids) . ')');
+          ->where('`id` IN(' . \Dvelum\Utils::listIntegers($ids) . ')');
 
         $info = $this->dbSlave->fetchAll($sql);
       }
     }
 
     if(! empty($info))
-      $info = Utils::rekey('id', $info);
+      $info = \Dvelum\Utils::rekey('id', $info);
 
     foreach($data as $place => $items){
       if(! empty($items)){

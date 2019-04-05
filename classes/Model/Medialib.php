@@ -101,7 +101,7 @@ class Model_Medialib extends Model
     static public function getImgPath($path, $ext, $type, $prependWebRoot = false)
     {
         if (empty($ext)) {
-            $ext = File::getExt($path);
+            $ext = \Dvelum\File::getExt($path);
         }
 
         $str = str_replace($ext, '-' . $type . $ext, $path);
@@ -404,7 +404,7 @@ class Model_Medialib extends Model
      */
     static public function getFilePic($filename)
     {
-        $ext = File::getExt($filename);
+        $ext = \Dvelum\File::getExt($filename);
         $icon = 'i/system/file.png';
         switch ($ext) {
             case '.jpg':

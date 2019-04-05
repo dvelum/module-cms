@@ -91,7 +91,7 @@ class Model_Menu extends Model
             $data = Model::factory('Medialib')->getItems($resourceIds, array('id', 'path'));
 
             if (!empty($data)) {
-                $resourcesData = Utils::rekey('id', $data);
+                $resourcesData = \Dvelum\Utils::rekey('id', $data);
             }
         }
 
