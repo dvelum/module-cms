@@ -22,6 +22,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Router;
 
 use Dvelum\App\Auth;
+use Dvelum\App\Cache\Manager;
 use Dvelum\App\Router;
 use Dvelum\Config;
 use Dvelum\Request;
@@ -132,7 +133,7 @@ class Cms extends Router
 
         $this->moduleRoutes = array();
 
-        $cacheManager = new \Cache_Manager();
+        $cacheManager = new Manager();
         $cache = $cacheManager->get('data');
 
         if (!$cache || !$list = $cache->load(self::CACHE_KEY_ROUTES)) {
