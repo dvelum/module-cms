@@ -2,6 +2,7 @@
 
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
+use Dvelum\Lang;
 
 /**
  * Menu item model
