@@ -31,7 +31,14 @@ class Controller extends Backend\Ui\Controller
 {
     public function indexAction()
     {
-        $this->resource->addJs('/js/app/system/Blocks.js' , 10 , 1);
+        $this->resource->addJs('/resources/dvelum-module-cms/js/Blocks.js' , 10 , 1);
+        $this->resource->addJs('/resources/dvelum-module-cms/js/crud/blocks.js' , 10 , 1);
+        /**
+         * @var \Model_Medialib $mediaModel
+         */
+        $mediaModel = Model::factory('Medialib');
+        $mediaModel->includeScripts();
+
         parent::indexAction();
     }
 
@@ -97,7 +104,7 @@ class Controller extends Backend\Ui\Controller
     {
         $moduleName = $this->getModule();
         $projectData = [];
-        $projectData['includes']['js'][] =  '/js/app/system/Blocks.js';
+        $projectData['includes']['js'][] =  '/resources/dvelum-module-cms/js/Blocks.js';
         /*
          * Module bootstrap
          */

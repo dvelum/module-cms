@@ -48,9 +48,9 @@ class Controller extends Backend\Ui\Controller
     {
         $module = $this->getModule();
         $this->resource->addInlineJs('
-        	var canEdit = ' . ((int)$this->moduleAcl->canEdit($module)) . ';
-        	var canDelete = ' . ((int)$this->moduleAcl->canDelete($module)) . ';
-        	var menuItemlinkTypes = ' . \Dictionary::factory('link_type')->__toJs() . ';
+            var canEdit = ' . ((int)$this->moduleAcl->canEdit($module)) . ';
+            var canDelete = ' . ((int)$this->moduleAcl->canDelete($module)) . ';
+            var menuItemlinkTypes = ' . \Dictionary::factory('link_type')->__toJs() . ';
         ');
 
         /**
@@ -63,8 +63,8 @@ class Controller extends Backend\Ui\Controller
         $this->resource->addJs('/js/app/system/HistoryPanel.js', 0);
         $this->resource->addJs('/js/app/system/EditWindow.js', 0);
 
-        $this->resource->addJs('/js/app/system/Menu.js', 3);
-        $this->resource->addJs('/js/app/system/crud/menu.js', 4);
+        $this->resource->addJs('/resources/dvelum-module-cms/js/Menu.js', 3);
+        $this->resource->addJs('/resources/dvelum-module-cms/js/crud/menu.js', 4);
     }
 
     public function initListeners()

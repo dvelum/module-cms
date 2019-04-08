@@ -24,7 +24,7 @@
             'id' => 'Mediaconfig',
             'dev' => true,
             'active' => true,
-            'class' => 'Backend_Mediaconfig_Controller',
+            'class' => '\\Dvelum\\App\\Backend\\Mediaconfig\\Controller',
             'designer' => '',
             'in_menu' => true,
             'icon' => 'i/system/icons/mediaconfig.png',

@@ -1,5 +1,26 @@
 <?php
+/**
+ *  DVelum project https://github.com/dvelum/dvelum
+ *  Copyright (C) 2011-2017  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+declare(strict_types=1);
 
+namespace Dvelum\App\Backend\Mediaconfig;
+
+use Dvelum\App\Backend;
 use Dvelum\Orm\Model;
 use Dvelum\Filter;
 use Dvelum\Config;
@@ -8,16 +29,27 @@ use Dvelum\Config;
  * Medialibrary configuration module controller
  * Backoffice UI
  */
-class Backend_Mediaconfig_Controller extends Backend_Controller
+class Controller extends Backend\Ui\Controller
 {
+
+    public function getModule(): string
+    {
+        return 'Mediaconfig';
+    }
+
+    public function getObjectName(): string
+    {
+        return '';
+    }
+
     public function indexAction()
     {
-        $this->_resource->addJs('/js/app/system/Mediaconfig.js', 4);
-        $this->_resource->addJs('/js/app/system/crud/mediaconfig.js', 5);
+        $this->resource->addJs('/resources/dvelum-module-cms/js/Mediaconfig.js', 4);
+        $this->resource->addJs('/resources/dvelum-module-cms/js/crud/mediaconfig.js', 5);
 
-        $this->_resource->addInlineJs('
-        	var canEdit = ' . ((boolean)$this->_user->canEdit($this->_module)) . ';
-        	var canDelete = ' . ((boolean)$this->_user->canDelete($this->_module)) . ';
+        $this->resource->addInlineJs('
+            var canEdit = ' . ((boolean)$this->user->getModuleAcl()->canEdit($this->getModule())) . ';
+            var canDelete = ' . ((boolean)$this->user->getModuleAcl()->canDelete($this->getModule())) . ';
         ');
     }
 
@@ -33,17 +65,18 @@ class Backend_Mediaconfig_Controller extends Backend_Controller
 
         foreach ($config['image']['sizes'] as $code => $item) {
             $resize = 'crop';
-            if (isset($config['image']['thumb_types'][$code]))
+            if (isset($config['image']['thumb_types'][$code])) {
                 $resize = $config['image']['thumb_types'][$code];
+            }
 
-            $result[] = array(
+            $result[] = [
                 'code' => $code,
                 'resize' => $resize,
                 'width' => $item[0],
                 'height' => $item[1]
-            );
+            ];
         }
-        Response::jsonSuccess($result);
+        $this->response->success($result);
     }
 
     /**
@@ -51,12 +84,16 @@ class Backend_Mediaconfig_Controller extends Backend_Controller
      */
     public function updateAction()
     {
-        $this->_checkCanEdit();
+        if (!$this->checkCanEdit()) {
+            return;
+        }
 
-        $data = Request::post('data', 'raw', false);
+        $data = $this->request->post('data', 'raw', false);
 
-        if ($data === false)
-            Response::jsonSuccess();
+        if ($data === false) {
+            $this->response->success();
+            return;
+        }
 
         $dataType = json_decode($data);
         if (!is_array($dataType)) {
@@ -77,10 +114,12 @@ class Backend_Mediaconfig_Controller extends Backend_Controller
         $config = $media->getConfig();
         $config->set('image', $configImage);
 
-        if (!Config::storage()->save($config))
-            Response::jsonError($this->_lang->CANT_WRITE_FS);
+        if (!Config::storage()->save($config)) {
+            $this->response->error($this->lang->get('CANT_WRITE_FS'));
+            return;
+        }
 
-        Response::jsonSuccess();
+        $this->response->success();
     }
 
     /**
@@ -88,12 +127,16 @@ class Backend_Mediaconfig_Controller extends Backend_Controller
      */
     public function deleteAction()
     {
-        $this->_checkCanDelete();
+        if (!$this->checkCanDelete()) {
+            return;
+        }
 
-        $data = Request::post('data', 'raw', false);
+        $data = $this->request->post('data', 'raw', false);
 
-        if ($data === false)
-            Response::jsonSuccess();
+        if ($data === false) {
+            $this->response->success();
+            return;
+        }
 
 
         $dataType = json_decode($data);
@@ -115,10 +158,12 @@ class Backend_Mediaconfig_Controller extends Backend_Controller
         $config = $media->getConfig();
         $config->set('image', $configImage);
 
-        if (!$config->save())
-            Response::jsonError($this->_lang->CANT_WRITE_FS);
+        if (!$config->save()) {
+            $this->response->error($this->lang->get('CANT_WRITE_FS'));
+            return;
+        }
 
-        Response::jsonSuccess();
+        $this->response->success();
     }
 
     /**
@@ -126,33 +171,41 @@ class Backend_Mediaconfig_Controller extends Backend_Controller
      */
     public function startCropAction()
     {
-        $this->_checkCanEdit();
+        if (!$this->checkCanEdit()) {
+            return;
+        }
 
-        $notCroped = Request::post('notcroped', 'boolean', false);
-        $sizes = Request::post('size', 'array', array());
+        $notCroped = $this->request->post('notcroped', 'boolean', false);
+        $sizes = $this->request->post('size', 'array', []);
 
-        if (empty($sizes) || !is_array($sizes))
-            Response::jsonError($this->_lang->MSG_SELECT_SIZE);
+        if (empty($sizes) || !is_array($sizes)) {
+            $this->response->error($this->lang->get('MSG_SELECT_SIZE'));
+            return;
+        }
 
         $mediaConfig = Model::factory('Medialib')->getConfig()->__toArray();
         $acceptedSizes = array_keys($mediaConfig['image']['sizes']);
-        $sizeToCrop = array();
+        $sizeToCrop = [];
 
-        foreach ($sizes as $key => $item)
-            if (in_array($item, $acceptedSizes, true))
+        foreach ($sizes as $key => $item) {
+            if (in_array($item, $acceptedSizes, true)) {
                 $sizeToCrop[] = $item;
+            }
+        }
 
-        if (empty($sizeToCrop))
-            Response::jsonError($this->_lang->MSG_SELECT_SIZE);
+        if (empty($sizeToCrop)) {
+            $this->response->error($this->lang->get('MSG_SELECT_SIZE'));
+            return;
+        }
 
         //Model::factory('bgtask')->getDbConnection()->getProfiler()->profilerFinish();
 
-        $bgStorage = new Bgtask_Storage_Orm(Model::factory('bgtask'), Model::factory('Bgtask_Signal'));
-        $logger = new Bgtask_Log_File($this->_configMain['task_log_path'] . 'recrop_' . date('d_m_Y__H_i_s'));
-        $tm = Bgtask_Manager::getInstance();
+        $bgStorage = new \Bgtask_Storage_Orm(Model::factory('bgtask'), Model::factory('Bgtask_Signal'));
+        $logger = new \Bgtask_Log_File($this->appConfig->get('task_log_path') . 'recrop_' . date('d_m_Y__H_i_s'));
+        $tm = \Bgtask_Manager::getInstance();
         $tm->setStorage($bgStorage);
         $tm->setLogger($logger);
-        $tm->launch(Bgtask_Manager::LAUNCHER_JSON, 'Task_Recrop', array('types' => $sizeToCrop, 'notCroped' => $notCroped));
+        $tm->launch(\Bgtask_Manager::LAUNCHER_JSON, 'Task_Recrop', ['types' => $sizeToCrop, 'notCroped' => $notCroped]);
     }
 
     /**
@@ -165,8 +218,9 @@ class Backend_Mediaconfig_Controller extends Backend_Controller
         /*
          * Module bootstrap
          */
-        if (file_exists($this->_configMain->get('jsPath') . 'app/system/desktop/' . strtolower($this->_module) . '.js'))
-            $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->_module) . '.js';
+        if (file_exists($this->appConfig->get('jsPath') . 'app/system/desktop/' . strtolower($this->getModule()) . '.js')) {
+            $projectData['includes']['js'][] = '/js/app/system/desktop/' . strtolower($this->getModule()) . '.js';
+        }
 
         return $projectData;
     }
