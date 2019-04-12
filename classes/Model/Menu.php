@@ -69,6 +69,7 @@ class Model_Menu extends Model
 
     protected function _addUrls(array $menuItems) : array
     {
+        $request = \Dvelum\Request::factory();
         $codes = Model::factory('Page')->getCachedCodes();
         $resourceIds = array();
         $resourcesData = array();
@@ -100,9 +101,9 @@ class Model_Menu extends Model
             switch ($v['link_type']) {
                 case 'page' :
                     if ($v['page_code'] == 'index') {
-                        $v['link_url'] = Request::url(['']);
+                        $v['link_url'] = $request->url(['']);
                     } else {
-                        $v['link_url'] = Request::url([$v['page_code']]);
+                        $v['link_url'] = $request->url([$v['page_code']]);
                     }
                     break;
                 case 'url' :

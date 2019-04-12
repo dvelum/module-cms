@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Backend\Menu;
 
 use Dvelum\App\Backend;
+use Dvelum\App\Dictionary;
 use Dvelum\Orm\Record;
 use Dvelum\Orm\Model;
 use Dvelum\Orm\RecordInterface;
@@ -50,7 +51,7 @@ class Controller extends Backend\Ui\Controller
         $this->resource->addInlineJs('
             var canEdit = ' . ((int)$this->moduleAcl->canEdit($module)) . ';
             var canDelete = ' . ((int)$this->moduleAcl->canDelete($module)) . ';
-            var menuItemlinkTypes = ' . \Dictionary::factory('link_type')->__toJs() . ';
+            var menuItemlinkTypes = ' . Dictionary::factory('link_type')->__toJs() . ';
         ');
 
         /**

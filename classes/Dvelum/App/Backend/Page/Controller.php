@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Backend\Page;
 
 use Dvelum\App\Backend;
+use Dvelum\App\Module\Manager\Frontend;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Config;
@@ -102,7 +103,7 @@ class Controller extends Backend\Ui\Controller
         $mediaModel = Model::factory('Medialib');
         $mediaModel->includeScripts($this->resource);
 
-        $moduleManager = new \Modules_Manager_Frontend();
+        $moduleManager = new Frontend();
 
         $funcList = [];
 
@@ -656,7 +657,7 @@ class Controller extends Backend\Ui\Controller
         /*
          * Get module codes
          */
-        $moduleManager = new \Modules_Manager_Frontend();
+        $moduleManager = new Frontend();
         // $fModules = Config::storage()->get($this->appConfig->get('frontend_modules'));
         $funcList = [];
         foreach ($moduleManager->getList() as $config) {

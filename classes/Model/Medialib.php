@@ -120,12 +120,12 @@ class Model_Medialib extends Model
      */
     static public function addWebRoot($itemPath)
     {
-        if (Request::wwwRoot() !== '/') {
+        $request = \Dvelum\Request::factory();
+        if ($request->wwwRoot() !== '/') {
             if ($itemPath[0] === '/') {
                 $itemPath = substr($itemPath, 1);
             }
-
-            $itemPath = Request::wwwRoot() . $itemPath;
+            $itemPath = $request->wwwRoot() . $itemPath;
         }
         return $itemPath;
     }

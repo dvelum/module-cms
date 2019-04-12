@@ -21,6 +21,7 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Trigger;
 
+use Dvelum\App\Router\Cms;
 use Dvelum\App\Trigger;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
@@ -62,7 +63,7 @@ class Page extends Trigger
 		$this->cache->remove(\Model_Page::getCodeHash($code));
 		$bm =  Service::get('blockManager');
 		$bm->invalidatePageMap($id);
-		$this->cache->remove(\Router_Module::CACHE_KEY_ROUTES);
+		$this->cache->remove(Cms::CACHE_KEY_ROUTES);
 	}
 
     public function clearBlockCache($pageId)
