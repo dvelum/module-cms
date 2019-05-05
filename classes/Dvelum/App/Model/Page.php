@@ -1,14 +1,36 @@
 <?php
+/**
+ *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  Copyright (C) 2011-2019  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+declare(strict_types=1);
+
+namespace Dvelum\App\Model;
 
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Config;
+use Dvelum\Tree\Tree;
 
 /**
  * Pages Model
  * @author Kirill Egorov 2011
  */
-class Model_Page extends Model
+class Page extends Model
 {
     /**
      * Get Pages tree
@@ -61,7 +83,7 @@ class Model_Page extends Model
             $tree->addItem($value['id'], $value['parent_id'], $value, $value['order_no']);
         }
 
-        return $this->_fillChilds($tree, 0);
+        return $this->fillChildren($tree, 0);
     }
 
     /**
@@ -70,20 +92,20 @@ class Model_Page extends Model
      * @param mixed $root
      * @return array
      */
-    protected function _fillChilds(Tree $tree, $root = 0)
+    protected function fillChildren(Tree $tree, $root = 0)
     {
         $result = array();
-        $childs = $tree->getChilds($root);
+        $children = $tree->getChildren($root);
 
-        if (empty($childs)) {
-            return array();
+        if (empty($children)) {
+            return [];
         }
 
         $appConfig = Config::storage()->get('main.php');
 
-        foreach ($childs as $v) {
+        foreach ($children as $v) {
             $row = $v['data'];
-            $obj = new stdClass();
+            $obj = new \stdClass();
 
             $obj->id = $row['id'];
             $obj->text = $row['menu_title'] . ' <i>(' . $row['code'] . $appConfig['urlExtension'] . ')</i>';
@@ -103,8 +125,8 @@ class Model_Page extends Model
             }
 
             $cld = [];
-            if ($tree->hasChilds($row['id'])) {
-                $cld = $this->_fillChilds($tree, $row['id']);
+            if ($tree->hasChildren($row['id'])) {
+                $cld = $this->fillChildren($tree, $row['id']);
             }
 
             $obj->children = $cld;
