@@ -1,13 +1,13 @@
 <?php
 
-$createFooterNode = function (Tree $tree , $parent , Page $page , Tree $pagesTree) use(&$createFooterNode)
+$createFooterNode = function (\Dvelum\Tree\Tree $tree , $parent , Page $page , \Dvelum\Tree\Tree $pagesTree) use(&$createFooterNode)
 {
     $s = '';
 
-    if(!$tree->hasChilds($parent))
+    if(!$tree->hasChildren($parent))
         return '';
 
-    $childs = $tree->getChilds($parent);
+    $childs = $tree->getChildren($parent);
 
     ($parent === 0) ? $isSection = true : $isSection = false;
 
@@ -34,7 +34,7 @@ $createFooterNode = function (Tree $tree , $parent , Page $page , Tree $pagesTre
             $s .=  '<span class="item">' . $v['data']['title'] . '</span>';
         }
 
-        if($tree->hasChilds($v['id'])){
+        if($tree->hasChildren($v['id'])){
             $s .='<ul>';
             $s .= $createFooterNode($tree , $v['id'] , $page , $pagesTree);
             $s .= '</ul>';
@@ -54,7 +54,7 @@ $createFooterNode = function (Tree $tree , $parent , Page $page , Tree $pagesTre
 
 $pagesTree = $this->get('pagesTree');
 
-$tree = new Tree();
+$tree = new \Dvelum\Tree\Tree();
 $menuData = $this->get('menuData');
 
 if(!empty($menuData))

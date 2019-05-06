@@ -1,13 +1,13 @@
 <?php
 
-$createNode = function ($tree , $parent , Page $page , Tree $pagesTree) use(&$createNode)
+$createNode = function (\Dvelum\Tree\Tree $tree , $parent , Page $page , \Dvelum\Tree\Tree $pagesTree) use(&$createNode)
 {
     $s = '';
 
-    if(!$tree->hasChilds($parent))
+    if(!$tree->hasChildren($parent))
         return '';
 
-    $items = $tree->getChilds($parent);
+    $items = $tree->getChildren($parent);
 
     $s .= '<ul>';
 
@@ -31,7 +31,7 @@ $createNode = function ($tree , $parent , Page $page , Tree $pagesTree) use(&$cr
 };
 
 $pagesTree = $this->get('pagesTree');
-$tree = new Tree();
+$tree = new \Dvelum\Tree\Tree();
 $menuData = $this->get('menuData');
 
 if(!empty($menuData))

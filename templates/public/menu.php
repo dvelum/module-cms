@@ -1,14 +1,14 @@
 <?php 
 
 
-$createMenuNode = function (Tree $tree , $parent , Page $page  , Tree $pagesTree) use (&$createMenuNode)
+$createMenuNode = function (\Dvelum\Tree\Tree $tree , $parent , Page $page  , \Dvelum\Tree\Tree $pagesTree) use (&$createMenuNode)
 {
 	 $s='';
 	 
-	 if(!$tree->hasChilds($parent))
+	 if(!$tree->hasChildren($parent))
 	 	return '';
 	 	
-	 $childs = $tree->getChilds($parent);
+	 $childs = $tree->getChildren($parent);
 	 
      foreach ($childs as $k=>$v)
      {
@@ -25,7 +25,7 @@ $createMenuNode = function (Tree $tree , $parent , Page $page  , Tree $pagesTree
                  	<a href="'.$v['data']['link_url'].'">'.$v['data']['title'].'</a>
                  </div>';
           
-         if($tree->hasChilds($v['id']))
+         if($tree->hasChildren($v['id']))
              $s.=$createMenuNode($tree , $v['id'] , $page , $pagesTree);
           
          $s.='</div>';
@@ -34,7 +34,7 @@ $createMenuNode = function (Tree $tree , $parent , Page $page  , Tree $pagesTree
 };
 
 $pagesTree = $this->get('pagesTree');
-$tree = new Tree();
+$tree = new \Dvelum\Tree\Tree();
 $menuData = $this->get('menuData');
 $config = $this->get('config');
 
@@ -50,7 +50,7 @@ if(is_array($menuData) && !empty($menuData))
 ?>
 	<div class="blockContent">	
 <?php 
-	if($tree->hasChilds(0))
+	if($tree->hasChildren(0))
 	  echo $createMenuNode($tree , 0 , $this->get('page') , $pagesTree);
 ?>
 	</div>
