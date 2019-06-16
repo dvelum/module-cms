@@ -25,6 +25,7 @@ use Dvelum\App\Auth;
 use Dvelum\App\Cache\Manager;
 use Dvelum\App\Router;
 use Dvelum\Config;
+use Dvelum\Page\Page;
 use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\Orm\Model;
@@ -70,10 +71,6 @@ class Cms extends Router
             return;
         }
 
-        //$cacheManager = new \Cache_Manager();
-        //$cache = $cacheManager->get('data');
-
-
        $auth = new Auth($request, $this->appConfig);
        $auth->auth();
 
@@ -92,25 +89,69 @@ class Cms extends Router
             $response->redirect('/');
         }
 
-        $page = \Page::getInstance();
-
-        foreach ($pageData as $k => $v) {
-            $page->{$k} = $v;
-        }
+        $page = Page::factory();
+        $this->applyPageData($pageData, $page);
 
         /**
          * Check if controller attached
          */
-        if (strlen($page->func_code)) {
+        if (strlen($pageData['func_code'])) {
             $fModules = Config::factory(Config\Factory::File_Array, $this->appConfig->get('frontend_modules'));
 
-            if ($fModules->offsetExists($page->func_code)) {
-                $controllerConfig = $fModules->get($page->func_code);
+            if ($fModules->offsetExists($pageData['func_code'])) {
+                $controllerConfig = $fModules->get($pageData['func_code']);
                 $this->runController($controllerConfig['class'], $request->getPart(1), $request, $response);
             }
         } else {
             $this->runController($this->frontendConfig->get('default_controller'), null, $request, $response);
         }
+    }
+
+    protected function applyPageData(array $data, Page $page) : void
+    {
+        /*
+            Page Object Fields
+            [is_fixed]
+            [parent_id]
+            [code]
+            [page_title]
+            [menu_title]
+            [html_title]
+            [meta_keywords]
+            [meta_description]
+            [text]
+            [func_code]
+            [show_blocks]
+            [in_site_map]
+            [order_no]
+            [blocks]
+            [theme]
+            [default_blocks]
+            [id]
+            [date_created]
+            [date_published]
+            [date_updated]
+            [author_id]
+            [editor_id]
+            [published]
+            [published_version]
+            [last_version]
+         */
+        $page = Page::factory();
+        $page->setId($data['id']);
+        $page->setCode($data['code']);
+        $page->setText($data['text']);
+        $page->setHtmlTitle($data['html_title']);
+        $page->setTitle($data['page_title']);
+        $page->setMetaDescription($data['meta_description']);
+        $page->setMetaKeywords($data['meta_keywords']);
+        $page->setTheme($data['theme']);
+        $page->setProperties([
+            'show_blocks' => $data['show_blocks'],
+            'in_site_map' => $data['in_site_map'],
+            'default_blocks' => $data['default_blocks'],
+            'func_code' => $data['func_code']
+        ]);
     }
 
     /**

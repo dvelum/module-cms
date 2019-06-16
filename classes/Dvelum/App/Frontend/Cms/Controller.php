@@ -21,9 +21,7 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Frontend\Cms;
 
-use Dvelum\{
-    App, Config, Config\ConfigInterface, Lang, Request, Response, Service, Orm\Model, Resource
-};
+use Dvelum\{App, Config, Config\ConfigInterface, Lang, Page\Page, Request, Response, Service, Orm\Model, Resource};
 
 class Controller extends App\Controller
 {
@@ -35,9 +33,14 @@ class Controller extends App\Controller
      * @var Lang
      */
     protected $lang;
+    /**
+     * @var Page
+     */
+    protected $page;
 
     public function __construct(Request $request, Response $response)
     {
+        $this->page = Page::factory();
         $this->frontendConfig = Config::storage()->get('frontend.php');
         $this->lang = Lang::lang();
         parent::__construct($request, $response);
@@ -55,8 +58,7 @@ class Controller extends App\Controller
 
         $vers = $this->request->get('vers', 'int', false);
 
-        $page = \Page::getInstance();
-        $page->setTemplatesPath('public/');
+        $this->page->setTemplatesPath('public/');
 
         /**
          * @var App\BlockManager $blockManager
@@ -67,15 +69,15 @@ class Controller extends App\Controller
             $blockManager->disableCache();
         }
 
-        if ($page->show_blocks) {
-            $blockManager->init($page->id, $page->default_blocks, $vers);
+        if ($this->page->getProperty('show_blocks')) {
+            $blockManager->init($this->page->getId(), (bool) $this->page->getProperty('default_blocks'), $vers);
         }
 
-        $layoutPath = $page->getThemePath() . 'layout.php';
+        $layoutPath = $this->page->getThemePath() . 'layout.php';
         $this->render($layoutPath, [
             'development' => $this->appConfig->get('development'),
-            'page' => $page,
-            'path' => $page->getThemePath(),
+            'page' => $this->page,
+            'path' => $this->page->getThemePath(),
             'blockManager' => $blockManager,
             'resource' => Resource::factory(),
             'pagesTree' => Model::factory('Page')->getTree()
