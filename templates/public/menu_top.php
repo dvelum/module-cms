@@ -1,6 +1,6 @@
 <?php
 
-$createNode = function (\Dvelum\Tree\Tree $tree , $parent , Page $page , \Dvelum\Tree\Tree $pagesTree) use(&$createNode)
+$createNode = function (\Dvelum\Tree\Tree $tree , $parent , \Dvelum\Page\Page $page , \Dvelum\Tree\Tree $pagesTree) use(&$createNode)
 {
     $s = '';
 
@@ -18,7 +18,7 @@ $createNode = function (\Dvelum\Tree\Tree $tree , $parent , Page $page , \Dvelum
 
         $class='';
 
-        if($page->code === $v['data']['page_code'] || in_array($v['data']['page_id'] , $pagesTree->getParentsList($page->id) , true))
+        if($page->getCode() === $v['data']['page_code'] || in_array($v['data']['page_id'] , $pagesTree->getParentsList($page->getId()) , true))
             $class = 'active';
 
         $s .= '<li><a href="' . $v['data']['link_url'] . '" class="'.$class.'">' . $v['data']['title'] . '</a></li>';

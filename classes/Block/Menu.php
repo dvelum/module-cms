@@ -41,10 +41,13 @@ class Block_Menu extends Block
             'place' => $this->_config['place'],
             'menuData' => $data
         ));
-
+        /**
+         * @var \Dvelum\App\Model\Page $pageModel
+         */
+        $pageModel =  Model::factory('Page');
         if(static::dependsOnPage){
-            $tpl->set('page' , \Page::getInstance());
-            $tpl->set('pagesTree' , Model::factory('Page')->getTree());
+            $tpl->set('page' , \Dvelum\Page\Page::factory());
+            $tpl->set('pagesTree' ,$pageModel->getTree());
         }
         return $tpl->render('public/'. $this->_template);
 	}

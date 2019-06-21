@@ -1,6 +1,6 @@
 <?php
 
-$createFooterNode = function (\Dvelum\Tree\Tree $tree , $parent , Page $page , \Dvelum\Tree\Tree $pagesTree) use(&$createFooterNode)
+$createFooterNode = function (\Dvelum\Tree\Tree $tree , $parent , \Dvelum\Page\Page $page , \Dvelum\Tree\Tree $pagesTree) use(&$createFooterNode)
 {
     $s = '';
 
@@ -25,7 +25,7 @@ $createFooterNode = function (\Dvelum\Tree\Tree $tree , $parent , Page $page , \
 
         $class='';
 
-        if($page->code === $v['data']['page_code'] || in_array($v['data']['page_id'] , $pagesTree->getParentsList($page->id) , true))
+        if($page->getCode() === $v['data']['page_code'] || in_array($v['data']['page_id'] , $pagesTree->getParentsList($page->getId()) , true))
             $class.='active';
 
         if($v['data']['link_url'] !== false){

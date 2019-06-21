@@ -57,10 +57,11 @@ class Page extends Trigger
 		if(!$this->cache)
 			return;
 
+
 		$model = Model::factory('Page');
 		$this->cache->remove($model->getCacheKey(array('item', 'code', $code)));
-		$this->cache->remove(\Model_Page::getCodeHash($id));
-		$this->cache->remove(\Model_Page::getCodeHash($code));
+		$this->cache->remove(\Dvelum\App\Model\Page::getCodeHash($id));
+		$this->cache->remove(\Dvelum\App\Model\Page::getCodeHash($code));
 		$bm =  Service::get('blockManager');
 		$bm->invalidatePageMap($id);
 		$this->cache->remove(Cms::CACHE_KEY_ROUTES);
@@ -71,7 +72,7 @@ class Page extends Trigger
 		if($this->cache){
 			$bm = Service::get('blockManager');
 			$this->cache->remove($bm->hashPage($pageId));
-			$this->cache->remove(Model::factory('Page')->getCacheKey(array('codes')));
+			$this->cache->remove(Model::factory('Page')->getCacheKey(['codes']));
 		}
 	}
 }

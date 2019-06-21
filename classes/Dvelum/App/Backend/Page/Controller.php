@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Backend\Page;
 
 use Dvelum\App\Backend;
+use Dvelum\App\Model\Historylog;
 use Dvelum\App\Module\Manager\Frontend;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
@@ -487,13 +488,13 @@ class Controller extends Backend\Ui\Controller
 
         if ($objectConfig->hasHistory()) {
             /**
-             * @var \Model_Historylog $hl
+             * @var Historylog $hl
              */
             $hl = Model::factory('Historylog');
             $hl->log(
                 $this->user->getId(),
                 $object->getId(),
-                \Model_Historylog::Publish,
+                Historylog::Publish,
                 Model::factory($object->getName())->table()
             );
         }
@@ -540,7 +541,7 @@ class Controller extends Backend\Ui\Controller
         $themesDir = $this->appConfig->get('themes');
         foreach ($paths as $path) {
             if (is_dir($path . $themesDir)) {
-                $themesList = File::scanFiles($path . $themesDir, false, false, File::Dirs_Only);
+                $themesList = File::scanFiles($path . $themesDir, false, false, File::DIRS_ONLY);
                 if (!empty($themesList)) {
                     foreach ($themesList as $themePath) {
                         $themeName = basename($themePath);

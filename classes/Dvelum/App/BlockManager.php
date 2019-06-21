@@ -96,7 +96,7 @@ class BlockManager
      */
     public function init($pageId , $defaultMap = false , $version = false) : void
     {
-        $this->map = array();
+        $this->map = [];
         $this->pageId = $pageId;
         $this->version = $version;
 
@@ -235,7 +235,7 @@ class BlockManager
             if($class::cacheable)
             {
                 if($class::dependsOnPage)
-                    $config['page_id'] = Page::getInstance()->id;
+                    $config['page_id'] = \Dvelum\Page\Page::factory();
 
                 $cacheKey = $this->getCacheKey($class , $config);
                 $data = $this->cache->load($cacheKey);
@@ -380,7 +380,7 @@ class BlockManager
             return;
 
         /**
-         * @var \Model_Page $pagesModel
+         * @var \Dvelum\App\Model\Page $pagesModel
          */
         $pagesModel = Model::factory('Page');
         $ids = $pagesModel->getPagesWithDefaultMap();
