@@ -68,7 +68,7 @@ class Controller extends Backend\Ui\Controller
             {
                 if(is_dir($path.'/'.$itemPath))
                 {
-                    $files = File::scanFiles($path.'/'.$itemPath , ['.php'], true , File::Files_Only);
+                    $files = File::scanFiles($path.'/'.$itemPath , ['.php'], true , File::FILES_ONLY);
                     foreach ($files as $k=>$file)
                     {
                         $class = Utils::classFromPath(str_replace($path, '',$file), true);
