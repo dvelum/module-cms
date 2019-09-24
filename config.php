@@ -13,6 +13,13 @@ return [
         './classes'
     ],
     'objects' =>[
+        'blockmapping',
+        'blocks',
+        'mediacategory',
+        'medialib',
+        'menu',
+        'menu_item',
+        'page'
     ],
     'post-install'=>''
 ];
