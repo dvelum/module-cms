@@ -22,6 +22,7 @@ namespace Dvelum\App\Backend\Page;
 
 use Dvelum\App\Backend;
 use Dvelum\App\Model\Historylog;
+use Dvelum\App\Model\Medialib;
 use Dvelum\App\Module\Manager\Frontend;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
@@ -99,7 +100,7 @@ class Controller extends Backend\Ui\Controller
         $this->resource->addJs('/resources/dvelum-module-cms/js/crud/page.js', 4);
 
         /**
-         * @var \Model_Medialib $mediaModel
+         * @var Medialib $mediaModel
          */
         $mediaModel = Model::factory('Medialib');
         $mediaModel->includeScripts($this->resource);

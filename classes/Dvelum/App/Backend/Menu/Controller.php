@@ -22,6 +22,7 @@ namespace Dvelum\App\Backend\Menu;
 
 use Dvelum\App\Backend;
 use Dvelum\App\Dictionary;
+use Dvelum\App\Model\Medialib;
 use Dvelum\Orm\Record;
 use Dvelum\Orm\Model;
 use Dvelum\Orm\RecordInterface;
@@ -55,7 +56,7 @@ class Controller extends Backend\Ui\Controller
         ');
 
         /**
-         * @var \Model_Medialib $mediaModel
+         * @var Medialib $mediaModel
          */
         $mediaModel = Model::factory('Medialib');
         $mediaModel->includeScripts($this->resource);

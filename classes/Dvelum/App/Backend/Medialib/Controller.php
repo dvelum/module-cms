@@ -21,6 +21,8 @@ declare(strict_types=1);
 namespace Dvelum\App\Backend\Medialib;
 
 use Dvelum\App\Backend;
+use Dvelum\App\Model\Medialib;
+use Dvelum\App\Upload\Uploader;
 use Dvelum\Orm\Model;
 use Dvelum\App\Controller\EventManager;
 use Dvelum\App\Controller\Event;
@@ -55,6 +57,10 @@ class Controller extends Backend\Ui\Controller
 
     public function prepareList(Event $event)
     {
+        /**
+         * @var Medialib $model
+         */
+        $model = Model::factory('Medialib');
         $data = &$event->getData()->data;
 
         $wwwRoot = $this->appConfig->get('wwwRoot');
@@ -62,15 +68,15 @@ class Controller extends Backend\Ui\Controller
         if (!empty($data)) {
             foreach ($data as &$v) {
                 if ($v['type'] == 'image') {
-                    $v['srcpath'] = \Model_Medialib::addWebRoot(str_replace($v['ext'], '', $v['path']));
-                    $v['thumbnail'] = \Model_Medialib::getImgPath($v['path'], $v['ext'], 'thumbnail', true);
-                    $v['icon'] = \Model_Medialib::getImgPath($v['path'], $v['ext'], 'icon', true);
+                    $v['srcpath'] = $model->addWebRoot(str_replace($v['ext'], '', $v['path']));
+                    $v['thumbnail'] = $model->getImgPath($v['path'], $v['ext'], 'thumbnail', true);
+                    $v['icon'] = $model->getImgPath($v['path'], $v['ext'], 'icon', true);
                 } else {
                     $v['icon'] = $wwwRoot . 'i/unknown.png';
                     $v['thumbnail'] = $wwwRoot . 'i/unknown.png';
                     $v['srcpath'] = '';
                 }
-                $v['path'] = \Model_Medialib::addWebRoot($v['path']);
+                $v['path'] = $model->addWebRoot($v['path']);
             }
             unset($v);
         }
@@ -81,7 +87,7 @@ class Controller extends Backend\Ui\Controller
         parent::indexAction();
 
         /**
-         * @var \Model_Medialib $mediaModel
+         * @var Medialib $mediaModel
          */
         $mediaModel = Model::factory('Medialib');
         $mediaModel->includeScripts($this->resource);
@@ -106,7 +112,7 @@ class Controller extends Backend\Ui\Controller
 
         $docRoot = $this->appConfig->get('wwwPath');
         /**
-         * @var \Model_Medialib $mediaModel
+         * @var Medialib $mediaModel
          */
         $mediaModel = Model::factory('Medialib');
         $mediaCfg = $mediaModel->getConfig();
@@ -119,7 +125,7 @@ class Controller extends Backend\Ui\Controller
 
         $files = $this->request->files();
 
-        $uploader = new \Upload($mediaCfg->__toArray());
+        $uploader = new Uploader($mediaCfg->__toArray());
 
         if (empty($files)) {
             $this->response->error($this->lang->get('NOT_UPLOADED'));
@@ -143,14 +149,14 @@ class Controller extends Backend\Ui\Controller
             $item = Model::factory('Medialib')->getItem($id);
 
             if ($item['type'] == 'image') {
-                $item['srcpath'] = \Model_Medialib::addWebRoot(str_replace($item['ext'], '', $item['path']));
+                $item['srcpath'] = $mediaModel->addWebRoot(str_replace($item['ext'], '', $item['path']));
             } else {
                 $item['srcPath'] = '';
             }
 
-            $item['thumbnail'] = \Model_Medialib::getImgPath($item['path'], $item['ext'], 'thumbnail', true);
-            $item['icon'] = \Model_Medialib::getImgPath($item['path'], $item['ext'], 'icon', true);
-            $item['path'] = \Model_Medialib::addWebRoot($item['path']);
+            $item['thumbnail'] = $mediaModel->getImgPath($item['path'], $item['ext'], 'thumbnail', true);
+            $item['icon'] = $mediaModel->getImgPath($item['path'], $item['ext'], 'icon', true);
+            $item['path'] = $mediaModel->addWebRoot($item['path']);
 
             $data[] = $item;
         }
@@ -179,7 +185,7 @@ class Controller extends Backend\Ui\Controller
         }
 
         /**
-         * @var \Model_Medialib $mediaModel
+         * @var Medialib $mediaModel
          */
         $mediaModel = Model::factory('Medialib');
         $item = $mediaModel->getItem($id);
@@ -253,7 +259,7 @@ class Controller extends Backend\Ui\Controller
         }
 
         /**
-         * @var \Model_Medialib $media
+         * @var Medialib $media
          */
         $media = Model::factory('Medialib');
 
@@ -267,7 +273,7 @@ class Controller extends Backend\Ui\Controller
     /**
      * Get item data
      */
-    public function getitemAction()
+    public function getItemAction()
     {
         $id = $this->request->post('id', 'integer', false);
 
@@ -275,17 +281,22 @@ class Controller extends Backend\Ui\Controller
             $this->response->error($this->lang->get('WRONG_REQUEST'));
         }
 
-        $item = Model::factory('Medialib')->getItem($id);
+        /**
+         * @var Medialib $model
+         */
+        $model = Model::factory('Medialib');
+
+        $item = $model->getItem($id);
 
         if ($item['type'] == 'image') {
-            $item['srcpath'] = \Model_Medialib::addWebRoot(str_replace($item['ext'], '', $item['path']));
+            $item['srcpath'] = $model->addWebRoot(str_replace($item['ext'], '', $item['path']));
         } else {
             $item['srcPath'] = '';
         }
 
-        $item['thumbnail'] = \Model_Medialib::getImgPath($item['path'], $item['ext'], 'thumbnail', true);
-        $item['icon'] = \Model_Medialib::getImgPath($item['path'], $item['ext'], 'icon', true);
-        $item['path'] = \Model_Medialib::addWebRoot($item['path']);
+        $item['thumbnail'] = $model->getImgPath($item['path'], $item['ext'], 'thumbnail', true);
+        $item['icon'] = $model->getImgPath($item['path'], $item['ext'], 'icon', true);
+        $item['path'] = $model->addWebRoot($item['path']);
 
         $this->response->success($item);
     }
@@ -296,6 +307,10 @@ class Controller extends Backend\Ui\Controller
     public function infoAction()
     {
         $id = $this->request->post('id', 'integer', false);
+        /**
+         * @var Medialib $model
+         */
+        $model = Model::factory('Medialib');
 
         if (!$id) {
             $this->response->success(['exists' => false]);
@@ -315,7 +330,7 @@ class Controller extends Backend\Ui\Controller
                 $stamp = date('ymdhis', strtotime($item['modified']));
             }
 
-            $icon = \Model_Medialib::getImgPath($item['path'], $item['ext'], 'thumbnail', true) . '?m=' . $stamp;
+            $icon = $model->getImgPath($item['path'], $item['ext'], 'thumbnail', true) . '?m=' . $stamp;
 
         } else {
             $icon = $this->appConfig->get('wwwroot') . 'i/unknown.png';

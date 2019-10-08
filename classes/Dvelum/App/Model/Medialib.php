@@ -1,23 +1,48 @@
 <?php
+/**
+ *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  Copyright (C) 2011-2019  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
-use Dvelum\Config;
+namespace Dvelum\App\Model;
+
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
+use Dvelum\Config;
+use Dvelum\Resource;
+use \Exception;
 
-class Model_Medialib extends Model
+class Medialib extends Model
 {
     static protected $scriptsIncluded = false;
 
     /**
      * Get item record by its path
      * @param string $path
-     * @param array $fields - optional
      * @return int
      */
-    public function getIdByPath($path)
+    public function getIdByPath($path) : int
     {
-        $recId = $this->dbSlave->fetchOne($this->dbSlave->select()->from($this->table(),
-                array('id'))->where('`path` =?', $path));
+        $recId = $this->dbSlave->fetchOne(
+            $this->dbSlave->select()
+                ->from($this->table(), ['id'])
+                ->where('`path` =?', $path)
+        );
+
         return intval($recId);
     }
 
@@ -40,7 +65,7 @@ class Model_Medialib extends Model
             'path' => $path,
             'size' => $size,
             'type' => $type,
-            'user_id' => User::getInstance()->getId(),
+            'user_id' => \Dvelum\App\Session\User::factory()->getId(),
             'ext' => $ext,
             'date' => date('Y-m-d H:i:s'),
             'category' => $category,
@@ -58,8 +83,8 @@ class Model_Medialib extends Model
     }
 
     /**
-     * Delete item from library
-     * @param integer $id
+     * Delete record
+     * @param mixed $id record ID
      * @return bool
      */
     public function remove($id): bool
@@ -82,7 +107,7 @@ class Model_Medialib extends Model
             if ($data['type'] == 'image') {
                 $conf = $this->getConfig()->__toArray();
                 foreach ($conf['image']['sizes'] as $k => $v) {
-                    @unlink($docRoot . self::getImgPath($data['path'], $data['ext'], $k));
+                    @unlink($docRoot . $this->getImgPath($data['path'], $data['ext'], $k));
                 }
             }
         }
@@ -95,10 +120,10 @@ class Model_Medialib extends Model
      * @param string $path
      * @param string $ext
      * @param string $type
-     * @param boolean $prependWebRoot add wwwRoot prefix, optional
+     * @param bool $prependWebRoot add wwwRoot prefix, optional
      * @return string
      */
-    static public function getImgPath($path, $ext, $type, $prependWebRoot = false)
+    public function getImgPath(string $path, string $ext, string $type, bool $prependWebRoot = false) : string
     {
         if (empty($ext)) {
             $ext = \Dvelum\File::getExt($path);
@@ -107,7 +132,7 @@ class Model_Medialib extends Model
         $str = str_replace($ext, '-' . $type . $ext, $path);
 
         if ($prependWebRoot) {
-            return self::addWebRoot($str);
+            return $this->addWebRoot($str);
         } else {
             return $str;
         }
@@ -118,7 +143,7 @@ class Model_Medialib extends Model
      * @param string $itemPath
      * @return string
      */
-    static public function addWebRoot($itemPath)
+    public function addWebRoot(string $itemPath) : string
     {
         $request = \Dvelum\Request::factory();
         if ($request->wwwRoot() !== '/') {
@@ -135,21 +160,28 @@ class Model_Medialib extends Model
      * Used with rev_control objects
      * @param \Dvelum\Db\Select\ | \Zend\Db\Sql\Select $sql
      * @param string $fieldAlias
+     * @deprecated
      * @return void
      */
     protected function _queryAddAuthor($sql, $fieldAlias): void
     {
-        $sql->joinLeft(array('u1' => Model::factory('User')->table()), 'user_id = u1.id',
-            array($fieldAlias => 'u1.name'));
+        $sql->joinLeft(
+            array(
+                'u1' => Model::factory('User')->table()
+            ),
+            'user_id = u1.id',
+            array(
+                $fieldAlias => 'u1.name')
+        );
     }
 
     /**
      * Update media item
      * @param integer $id
      * @param array $data
-     * @return boolean
+     * @return bool
      */
-    public function update($id, array $data)
+    public function update($id, array $data) : bool
     {
         if (!$id) {
             return false;
@@ -159,7 +191,7 @@ class Model_Medialib extends Model
             $obj->setValues($data);
             $obj->save();
             $hLog = Model::factory('Historylog');
-            $hLog->log(\Dvelum\App\Session\User::getInstance()->getId(), $id, Model_Historylog::Update, $this->table());
+            $hLog->log(\Dvelum\App\Session\User::getInstance()->getId(), $id, Historylog::Update, $this->table());
             return true;
         } catch (Exception $e) {
             return false;
@@ -173,8 +205,9 @@ class Model_Medialib extends Model
     public function includeScripts(?\Dvelum\Resource $resource = null) : void
     {
         if(empty($resource)){
-            $resource = Dvelum\Resource::factory();
+            $resource = Resource::factory();
         }
+
         $version = Config::storage()->get('versions.php')->get('medialib');
         $appConfig = Config::storage()->get('main.php');
 
@@ -217,13 +250,17 @@ class Model_Medialib extends Model
     }
 
     /**
-     *
+     * Resize action
      * @param array $types
      * @return int
      */
     public function resizeImages($types = false): int
     {
-        $data = Model::factory('Medialib')->getListVc(false, array('type' => 'image'), false, array('path', 'ext'));
+        $data = Model::factory('Medialib')->query()
+            ->filters(['type' => 'image'])
+            ->fields(['path', 'ext'])
+            ->fetchAll();
+
         ini_set('max_execution_time', 18000);
         ini_set('ignore_user_abort', 'On');
         ini_set('memory_limit', '384M');
@@ -348,7 +385,7 @@ class Model_Medialib extends Model
      * @param integer $id
      * @return void
      */
-    public function markCroped($id)
+    public function markCroped($id) : void
     {
         $obj = Orm\Record::factory($this->name, $id);
         $obj->set('croped', 1);
@@ -359,16 +396,16 @@ class Model_Medialib extends Model
      * Get media library config
      * @return Config\ConfigInterface
      */
-    public function getConfig()
+    public function getConfig() : Config\ConfigInterface
     {
         return Config::storage()->get('media_library.php', true, false);
     }
 
     /**
      * Update media items, set category to null
-     * @param integer $id
+     * @param int $id
      */
-    public function categoryRemoved($id)
+    public function categoryRemoved($id) : void
     {
         $this->db->update($this->table(), array('category' => null), '`category` = ' . intval($id));
     }
@@ -379,7 +416,7 @@ class Model_Medialib extends Model
      * @param integer $catalog
      * @return bool
      */
-    public function updateItemsCategory(array $items, $catalog)
+    public function updateItemsCategory(array $items, $catalog) : bool
     {
         $items = array_map('intval', $items);
 
@@ -388,8 +425,11 @@ class Model_Medialib extends Model
         }
 
         try {
-            $this->db->update($this->table(), array('category' => $catalog),
-                ' `' . $this->getPrimaryKey() . '` IN(' . implode(',', $items) . ')');
+            $this->db->update(
+                $this->table(),
+                ['category' => $catalog],
+                ' `' . $this->getPrimaryKey() . '` IN(' . implode(',', $items) . ')'
+            );
             return true;
         } catch (Exception $e) {
             $this->logError('updateItemsCategory: ' . $e->getMessage());

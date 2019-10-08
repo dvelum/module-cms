@@ -19,6 +19,16 @@
             'in_menu' => true,
             'icon' => 'i/system/icons/media.png',
         ),
+    'Mediacategory' =>
+        array (
+            'id' => 'Medialib',
+            'dev' => false,
+            'active' => true,
+            'class' => '\\Dvelum\\App\\Backend\\Mediacategory\\Controller',
+            'designer' => '',
+            'in_menu' => false,
+            'icon' => 'i/system/icons/mediaconfig.png',
+        ),
     'Mediaconfig' =>
         array (
             'id' => 'Mediaconfig',
