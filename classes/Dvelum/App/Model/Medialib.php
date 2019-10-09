@@ -37,8 +37,8 @@ class Medialib extends Model
      */
     public function getIdByPath($path) : int
     {
-        $recId = $this->dbSlave->fetchOne(
-            $this->dbSlave->select()
+        $recId = $this->db->fetchOne(
+            $this->db->select()
                 ->from($this->table(), ['id'])
                 ->where('`path` =?', $path)
         );
