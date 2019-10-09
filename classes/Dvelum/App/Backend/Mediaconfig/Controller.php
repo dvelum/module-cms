@@ -21,6 +21,9 @@ declare(strict_types=1);
 namespace Dvelum\App\Backend\Mediaconfig;
 
 use Dvelum\App\Backend;
+use Dvelum\BackgroundTask\Log\File;
+use Dvelum\BackgroundTask\Manager;
+use Dvelum\BackgroundTask\Storage\Orm;
 use Dvelum\Orm\Model;
 use Dvelum\Filter;
 use Dvelum\Config;
@@ -200,12 +203,12 @@ class Controller extends Backend\Ui\Controller
 
         //Model::factory('bgtask')->getDbConnection()->getProfiler()->profilerFinish();
 
-        $bgStorage = new \Bgtask_Storage_Orm(Model::factory('bgtask'), Model::factory('Bgtask_Signal'));
-        $logger = new \Bgtask_Log_File($this->appConfig->get('task_log_path') . 'recrop_' . date('d_m_Y__H_i_s'));
-        $tm = \Bgtask_Manager::getInstance();
+        $bgStorage = new Orm(Model::factory('bgtask'), Model::factory('Bgtask_Signal'));
+        $logger = new File($this->appConfig->get('task_log_path') . 'recrop_' . date('d_m_Y__H_i_s'));
+        $tm = Manager::factory();
         $tm->setStorage($bgStorage);
         $tm->setLogger($logger);
-        $tm->launch(\Bgtask_Manager::LAUNCHER_JSON, 'Task_Recrop', ['types' => $sizeToCrop, 'notCroped' => $notCroped]);
+        $tm->launch(Manager::LAUNCHER_JSON, '\\Dvelum\\App\\Task\\Recrop', ['types' => $sizeToCrop, 'notCroped' => $notCroped]);
     }
 
     /**
