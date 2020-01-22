@@ -23,6 +23,7 @@ namespace Dvelum\App\Backend\Page;
 use Dvelum\App\Backend;
 use Dvelum\App\Model\Historylog;
 use Dvelum\App\Model\Medialib;
+use Dvelum\App\Model\Vc;
 use Dvelum\App\Module\Manager\Frontend;
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
@@ -413,19 +414,13 @@ class Controller extends Backend\Ui\Controller
             return;
         }
 
-        $acl = $object->getAcl();
-        if ($acl && !$acl->canPublish($object)) {
-            $this->response->error($this->lang->get('CANT_PUBLISH'));
-            return;
-        }
-
         if (!$this->checkOwner($object)) {
             $this->response->error($this->lang->get('CANT_ACCESS'));
             return;
         }
 
         /**
-         * @var \Model_Vc $vc
+         * @var Vc $vc
          */
         $vc = Model::factory('Vc');
 
@@ -435,7 +430,7 @@ class Controller extends Backend\Ui\Controller
          * Do not publish some data
          * parent_id and order_no can be changed outside of version control
          */
-        $publishException = array('id', 'order_no', 'parent_id');
+        $publishException = ['id', 'order_no', 'parent_id'];
         foreach ($publishException as $field) {
             if (array_key_exists($field, $data)) {
                 unset($data[$field]);

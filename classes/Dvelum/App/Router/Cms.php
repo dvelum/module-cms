@@ -139,13 +139,13 @@ class Cms extends Router
          */
         $page = Page::factory();
         $page->setId($data['id']);
-        $page->setCode($data['code']);
-        $page->setText($data['text']);
-        $page->setHtmlTitle($data['html_title']);
-        $page->setTitle($data['page_title']);
-        $page->setMetaDescription($data['meta_description']);
-        $page->setMetaKeywords($data['meta_keywords']);
-        $page->setTheme($data['theme']);
+        $page->setCode((string)$data['code']);
+        $page->setText((string)$data['text']);
+        $page->setHtmlTitle((string)$data['html_title']);
+        $page->setTitle((string)$data['page_title']);
+        $page->setMetaDescription((string)$data['meta_description']);
+        $page->setMetaKeywords((string)$data['meta_keywords']);
+        $page->setTheme((string)$data['theme']);
         $page->setProperties([
             'show_blocks' => $data['show_blocks'],
             'in_site_map' => $data['in_site_map'],
