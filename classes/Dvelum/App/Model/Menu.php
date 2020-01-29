@@ -1,12 +1,34 @@
 <?php
+/**
+ *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  Copyright (C) 2011-2020  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+declare(strict_types=1);
+
+namespace Dvelum\App\Model;
+
 use Dvelum\Orm\Model;
 
-class Model_Menu extends Model
+class Menu extends Model
 {
     public function resetCachedMenuLinks($menuId)
     {
         if ($this->cache) {
-            $this->cache->remove($this->getCacheKey(array('links', $menuId)));
+            $this->cache->remove($this->getCacheKey(['links', $menuId]));
         }
     }
 
@@ -58,7 +80,7 @@ class Model_Menu extends Model
             return [];
         }
 
-        $list = $this->_addUrls($list);
+        $list = $this->addUrls($list);
 
         if ($this->cache) {
             $this->cache->save($list, $cacheKey);
@@ -67,7 +89,7 @@ class Model_Menu extends Model
         return $list;
     }
 
-    protected function _addUrls(array $menuItems) : array
+    protected function addUrls(array $menuItems) : array
     {
         $request = \Dvelum\Request::factory();
         $codes = Model::factory('Page')->getCachedCodes();
@@ -111,7 +133,7 @@ class Model_Menu extends Model
                     break;
                 case 'resource' :
                     if (isset($resourcesData[$v['resource_id']])) {
-                        $v['link_url'] = Model_Medialib::addWebRoot($resourcesData[$v['resource_id']]['path']);
+                        $v['link_url'] = Medialib::addWebRoot($resourcesData[$v['resource_id']]['path']);
                     }
                     break;
                 case 'nolink' :

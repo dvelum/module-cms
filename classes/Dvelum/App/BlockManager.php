@@ -1,7 +1,7 @@
 <?php
 /**
  *  DVelum project https://github.com/dvelum/dvelum
- *  Copyright (C) 2011-2017  Kirill Yegorov
+ *  Copyright (C) 2011-2020 Kirill Yegorov
  *  
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ class BlockManager
     protected $version;
     protected $hasNoCacheBlock = false;
 
-    const DEFAULT_BLOCK = 'Block_Simple';
+    const DEFAULT_BLOCK = '\\Dvelum\\App\\Block\\Simple';
     const CACHE_KEY = 'blockmanager_data';
 
     /**
@@ -232,9 +232,9 @@ class BlockManager
          */
         if($this->cache)
         {
-            if($class::cacheable)
+            if($class::CAN_USE_CACHE)
             {
-                if($class::dependsOnPage)
+                if($class::DEPENDS_ON_PAGE)
                     $config['page_id'] = \Dvelum\Page\Page::factory();
 
                 $cacheKey = $this->getCacheKey($class , $config);
@@ -255,7 +255,7 @@ class BlockManager
 
         $html = $blockObject->render();
 
-        if($class::cacheable && $this->cache)
+        if($class::CAN_USE_CACHE && $this->cache)
         {
             if($this->hardCache) {
                 $this->cache->save($html , $cacheKey , Config::storage()->get('orm.php')->get('hard_cache'));
@@ -480,7 +480,7 @@ class BlockManager
 
             foreach($sortedPageBlocks[$v['id']] as $pageToBlock)
             {
-                if($v['sys_name']::dependsOnPage)
+                if($v['sys_name']::DEPENDS_ON_PAGE)
                 {
                     $v['page_id'] = $pageToBlock['page_id'];
 

@@ -1,31 +1,54 @@
 <?php
+/**
+ *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  Copyright (C) 2011-2020  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+declare(strict_types=1);
+
+namespace Dvelum\App\Model\Menu;
 
 use Dvelum\Orm;
 use Dvelum\Orm\Model;
+
 use Dvelum\Lang;
+use Dvelum\Tree\Tree;
+use \Exception;
 
 /**
  * Menu item model
  */
-class Model_Menu_Item extends Model
+class Item extends Model
 {
 	/**
 	 * Get data for menu tree
 	 * @param integer $menuId
 	 * @return array
 	 */
-	public function getTreeList($menuId)
+	public function getTreeList(int $menuId) : array
 	{
          $data = $this->query()
              ->params(['sort'=>'order','dir'=>'ASC'])
              ->filters(['menu_id'=>$menuId])
              ->fetchAll();
 
-         
          if(empty($data))
              return [];
 
-         $tree = new Tree(); 
+         $tree = new Tree();
 
          foreach($data as $value)
              $tree->addItem($value['tree_id'], $value['parent_id'], $value ,$value['order']);
@@ -41,8 +64,8 @@ class Model_Menu_Item extends Model
      */
     protected function fillChildren(Tree $tree , $root = 0 )
     {
-           $result = array();
-            $children = $tree->getChilds($root);
+           $result = [];
+           $children = $tree->getChildren($root);
                
            if(empty($children))
                return [];
@@ -50,7 +73,7 @@ class Model_Menu_Item extends Model
            foreach($children as $k=>$v)
            {
                   $row = $v['data'];                            
-                  $obj = new stdClass();
+                  $obj = new \stdClass();
  
                   $obj->id = $row['tree_id'];  
                   $obj->text= $row['title'];
@@ -73,7 +96,7 @@ class Model_Menu_Item extends Model
                        
                    $cld= array();
                    
-                   if($tree->hasChilds($row['tree_id']))
+                   if($tree->hasChildren($row['tree_id']))
                       $cld = $this->fillChildren($tree ,  $row['tree_id']);
                        
                    $obj->children=$cld;                                            
@@ -83,13 +106,13 @@ class Model_Menu_Item extends Model
     }
     /**
      * Update menu links
-     * @param integer $objectId
+     * @param int $objectId
      * @param array $links
      * @return bool
      */
-    public function updateLinks($objectId, $links) : bool
+    public function updateLinks(int $objectId, array $links) : bool
     {  	
-    	$this->db->delete($this->table() , 'menu_id = '.intval($objectId));
+    	$this->db->delete($this->table() , 'menu_id = '.$objectId);
     	
     	if(!empty($links))
     	{
