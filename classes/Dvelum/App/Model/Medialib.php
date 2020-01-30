@@ -191,7 +191,7 @@ class Medialib extends Model
             $obj->setValues($data);
             $obj->save();
             $hLog = Model::factory('Historylog');
-            $hLog->log(\Dvelum\App\Session\User::getInstance()->getId(), $id, Historylog::Update, $this->table());
+            $hLog->log(\Dvelum\App\Session\User::factory()->getId(), $id, Historylog::Update, $this->table());
             return true;
         } catch (Exception $e) {
             return false;
