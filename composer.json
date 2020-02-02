@@ -1,7 +1,7 @@
 {
   "name": "dvelum/module-cms",
   "version": "3.0.0-dev",
-  "type": "dvelum-module",
+  "type": "dvelum3-module",
   "description": "CMS module for DVelum",
   "keywords": ["dvelum","cms"],
   "homepage": "https://github.com/dvelum/module-cms",
