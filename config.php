@@ -21,5 +21,5 @@ return [
         'menu_item',
         'page'
     ],
-    'post-install'=>''
+    'post-install'=>'\\Dvelum\\Cms\\Installer'
 ];

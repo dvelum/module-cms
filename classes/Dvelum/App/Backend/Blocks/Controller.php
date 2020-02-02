@@ -22,6 +22,7 @@ declare(strict_types=1);
 namespace Dvelum\App\Backend\Blocks;
 
 use Dvelum\App\Backend;
+use Dvelum\App\Model\Medialib;
 use Dvelum\Config;
 use Dvelum\File;
 use Dvelum\Utils;
@@ -34,7 +35,7 @@ class Controller extends Backend\Ui\Controller
         $this->resource->addJs('/resources/dvelum-module-cms/js/Blocks.js' , 10 , 1);
         $this->resource->addJs('/resources/dvelum-module-cms/js/crud/blocks.js' , 10 , 1);
         /**
-         * @var \Model_Medialib $mediaModel
+         * @var Medialib $mediaModel
          */
         $mediaModel = Model::factory('Medialib');
         $mediaModel->includeScripts();
@@ -57,29 +58,12 @@ class Controller extends Backend\Ui\Controller
      */
     public function classListAction()
     {
-        $blockPaths = $this->appConfig['blocks'];
-        $filePath = Config::storage()->get('autoloader.php');
-        $filePath = $filePath['paths'];
-
-        $classes = [];
-        foreach($filePath as $path)
-        {
-            foreach ($blockPaths as $itemPath)
-            {
-                if(is_dir($path.'/'.$itemPath))
-                {
-                    $files = File::scanFiles($path.'/'.$itemPath , ['.php'], true , File::FILES_ONLY);
-                    foreach ($files as $k=>$file)
-                    {
-                        $class = Utils::classFromPath(str_replace($path, '',$file), true);
-                        if(!empty($class) && stripos($class, 'abstract') === false){
-                            $classes[$class] = ['id'=>$class,'title'=>$class];
-                        }
-                    }
-                }
-            }
+        $blocks = Config::storage()->get('blocks.php')->__toArray();
+        $data = [];
+        foreach ($blocks as $id => $class){
+            $data[] = ['id'=>$class, 'title'=>$class];
         }
-        $this->response->success(array_values($classes));
+        $this->response->success($data);
     }
 
     /**
