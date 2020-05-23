@@ -153,7 +153,7 @@ class Installer extends \Dvelum\Externals\Installer
             'show_title'=>false,
             'published_version'=>0,
             'is_system'=>1,
-            'sys_name'=>'Block_Menu_Top',
+            'sys_name'=>'\\Dvelum\\App\\Block\\Menu\\Top',
             'is_menu' =>1,
             'menu_id'=>$topMenu->getId(),
             'last_version'=>0
@@ -169,7 +169,7 @@ class Installer extends \Dvelum\Externals\Installer
             'show_title'=>false,
             'published_version'=>0,
             'is_system'=>1,
-            'sys_name'=>'Block_Menu_Footer',
+            'sys_name'=>'\\Dvelum\\App\\Block\\Menu\\Footer',
             'is_menu' =>1,
             'menu_id'=>$bottomMenu->getId(),
             'last_version'=>0
@@ -186,7 +186,7 @@ class Installer extends \Dvelum\Externals\Installer
             'show_title'=>true,
             'published_version'=>0,
             'is_system'=>1,
-            'sys_name'=>'Block_Menu',
+            'sys_name'=>'\\Dvelum\\App\\Block\\Menu',
             'is_menu' =>1,
             'menu_id'=>$leftMenu->getId(),
             'last_version'=>0
