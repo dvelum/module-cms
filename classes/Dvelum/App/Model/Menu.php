@@ -93,6 +93,10 @@ class Menu extends Model
     {
         $request = \Dvelum\Request::factory();
         $codes = Model::factory('Page')->getCachedCodes();
+        /**
+         * @var Medialib $mediaModel
+         */
+        $mediaModel = Model::factory('Medialib');
         $resourceIds = array();
         $resourcesData = array();
 
@@ -111,7 +115,7 @@ class Menu extends Model
 
         if (!empty($resourceIds)) {
             $resourceIds = array_unique($resourceIds);
-            $data = Model::factory('Medialib')->getItems($resourceIds, array('id', 'path'));
+            $data = $mediaModel->getItems($resourceIds, array('id', 'path'));
 
             if (!empty($data)) {
                 $resourcesData = \Dvelum\Utils::rekey('id', $data);
@@ -133,7 +137,7 @@ class Menu extends Model
                     break;
                 case 'resource' :
                     if (isset($resourcesData[$v['resource_id']])) {
-                        $v['link_url'] = Medialib::addWebRoot($resourcesData[$v['resource_id']]['path']);
+                        $v['link_url'] = $mediaModel->addWebRoot($resourcesData[$v['resource_id']]['path']);
                     }
                     break;
                 case 'nolink' :
