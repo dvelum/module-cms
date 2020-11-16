@@ -427,16 +427,13 @@ class BlockManager
         $blockIds = Utils::fetchCol('id' , $blockItems);
         $blockMapping = Model::factory('Blockmapping');
 
-        $pageBlocks = $blockMapping->getList(
-            false ,
-            array(
-                'block_id' => $blockIds
-            ) ,
-            array(
-                'page_id' ,
+        $pageBlocks = $blockMapping->query()->filters(['block_id' => $blockIds])->fields(
+            [
+                'page_id',
                 'block_id'
-            )
-        );
+            ]
+        )->fetchAll();
+
 
         if(empty($pageBlocks))
             return;
