@@ -1,7 +1,7 @@
 <?php
 return [
     'id' => 'dvelum-module-cms',
-    'version' => '3.0.0',
+    'version' => '3.0.2',
     'author' => 'Kirill Yegorov',
     'name' => 'DVelum CMS',
     'configs' => './configs',
