@@ -23,7 +23,7 @@ Ext.define('app.medialib.HtmlPanel',{
 		
 		this.textEditor = Ext.create('Ext.ux.CKeditor',{
 			CKConfig:{
-			    skin : 'moono',
+			    skin : 'moono-lisa',
 			    uiColor:'#EDEDED',
 			    //enterMode:CKEDITOR.ENTER_BR,
 			    toolbar : 
@@ -43,8 +43,8 @@ Ext.define('app.medialib.HtmlPanel',{
 			    ],
 			    baseFloatZIndex:100000,
 			    contentsCss:[
-			      app.wwwRoot+'css/public/main/style.css',
-			      app.wwwRoot+'css/public/main/editor.css'
+			      app.wwwRoot+'resources/dvelum-module-cms/css/public/main/style.css',
+			      app.wwwRoot+'resources/dvelum-module-cms/css/public/main/editor.css'
 			    ],
 			    bodyClass:'content',
 			    bodyId:'content',
