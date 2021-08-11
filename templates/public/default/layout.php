@@ -4,11 +4,15 @@
  */
 $page = $this->get('page');
 /**
+ * @var \Dvelum\Request $request
+ */
+$request = $this->get('request');
+/**
  * @var \Dvelum\Resource $resource
  */
 $resource = $this->get('resource');
 
-$wwwRoot = \Dvelum\Request::factory()->wwwRoot();
+$wwwRoot = $request->wwwRoot();
 $robots = $page->getRobots();
 $htmlTitle = $page->getHtmlTitle();
 $metaDescription = $page->getMetaDescription();

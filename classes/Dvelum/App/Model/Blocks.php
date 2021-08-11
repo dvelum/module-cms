@@ -29,7 +29,7 @@ class Blocks extends Model
 
     /**
      * Set block mapping for page
-     *
+     * @param Model $blockMapping
      * @param int $pageId
      * @param array $map
      *          like array(
@@ -38,10 +38,9 @@ class Blocks extends Model
      *          'code3'=>array('blockid4','blockid7)
      *          )
      */
-    public function setMapping(int $pageId, array $map)
+    public function setMapping(Model $blockMapping, int $pageId, array $map)
     {
-        $bMapping = Model::factory('Blockmapping');
-        $bMapping->clearMap($pageId);
+        $blockMapping->clearMap($pageId);
 
         if (empty($map)) {
             return true;
@@ -59,7 +58,7 @@ class Blocks extends Model
                 }
             }
 
-            $bMapping->addBlocks($pageId, $code, $ids);
+            $blockMapping->addBlocks($pageId, $code, $ids);
         }
 
         return true;
@@ -67,25 +66,24 @@ class Blocks extends Model
 
     /**
      * Get block list for page
-     *
+     * @param Model $blockMapping
      * @param int $page
      * @param int|bool $version - optional
      * @return array - block list sorted by place code
      */
-    public function getPageBlocks(int $pageId, $version = false) : array
+    public function getPageBlocks(Model $blockMapping, int $pageId, $version = false) : array
     {
         if ($version) {
             return $this->extractBlocks($pageId, $version);
         }
 
-        $bMapping = Model::factory('Blockmapping');
 
         $sql = $this->db->select()
             ->from(array(
                 't' => $this->table()
             ))
             ->join(array(
-                'map' => $bMapping->table()
+                'map' => $blockMapping->table()
             ), 't.id = map.block_id', array(
                 'place'
             ));
@@ -93,7 +91,7 @@ class Blocks extends Model
         if (!$pageId) {
             $sql->where('map.page_id  IS NULL');
         } else {
-            $sql->where('map.page_id = ' . intval($pageId));
+            $sql->where('map.page_id = ' . ((int)$pageId));
         }
         $sql->order('map.order_no ASC');
 
@@ -108,14 +106,14 @@ class Blocks extends Model
 
     /**
      * Get blocks map from object vesrion
-     *
+     * @param Model $vcModel
      * @param int $pageId
      * @param int $version
      * @return array
      */
-    public function extractBlocks(int $pageId, int $version) : array
+    public function extractBlocks(Model $vcModel, int $pageId, int $version) : array
     {
-        $vcModel = Model::factory('Vc');
+
         $data = $vcModel->getData('page', $pageId, $version);
 
         if (!isset($data['blocks']) || empty($data['blocks'])) {

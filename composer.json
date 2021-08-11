@@ -1,8 +1,8 @@
 {
   "name": "dvelum/module-cms",
-  "version": "3.0.3",
-  "type": "dvelum3-module",
-  "description": "CMS module for DVelum",
+  "version": "4.0.0",
+  "type": "dvelum4-module",
+  "description": "CMS module for DVelum 4.x",
   "keywords": ["dvelum","cms"],
   "homepage": "https://github.com/dvelum/module-cms",
   "license": "GPL-3.0",
@@ -19,7 +19,7 @@
   "require": {
     "php":">=7.3",
     "oomphinc/composer-installers-extender": "^2.0",
-    "dvelum/dvelum": ">=3.0.0",
+    "dvelum/dvelum": ">=4.0.0",
     "ckeditor/ckeditor": "^4.9"
   }
 }

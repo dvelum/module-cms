@@ -25,11 +25,15 @@ use Dvelum\App\Auth;
 use Dvelum\App\Cache\Manager;
 use Dvelum\App\Router;
 use Dvelum\Config;
+use Dvelum\Orm\Orm;
 use Dvelum\Page\Page;
 use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\Orm\Model;
 use Dvelum\App\Session\User;
+use Interop\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Back office
@@ -42,51 +46,58 @@ class Cms extends Router
     protected $frontendConfig;
     protected $moduleRoutes;
 
-    public function __construct()
-    {
-        $this->appConfig = Config::storage()->get('main.php');
-        $this->frontendConfig = Config::storage()->get('frontend.php');
-    }
-
     /**
      * Route request
      * @param Request $request
      * @param Response $response
      */
-    public function route(Request $request, Response $response): void
+    public function route(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $pageVersion = $request->get('vers', 'int', false);
+        $requestHelper = new \Dvelum\Request($request);
+        $responseHelper = new \Dvelum\Response($response);
+
+        $pageVersion = $requestHelper->get('vers', 'int', false);
 
         $showRevision = false;
-        $pageCode = $request->getPart(0);
+        $pageCode = $requestHelper->getPart(0);
 
         if (!is_string($pageCode) || !strlen($pageCode)) {
             $pageCode = 'index';
         }
 
-        $pageData = Model::factory('Page')->getCachedItemByField('code', $pageCode);
+        /**
+         * @var Orm $orm
+         */
+        $orm = $this->container->get(Orm::class);
+
+        $pageData = $orm->model('Page')->getCachedItemByField('code', $pageCode);
 
         if (empty($pageData)) {
-            $response->redirect('/');
-            return;
+            $responseHelper->redirect('/');
+            return $responseHelper->getPsrResponse();
         }
 
-       $auth = new Auth($request, $this->appConfig);
-       $auth->auth();
+        $appConfig = $this->container->get('config.main');
+        $frontendConfig = $this->container->get('config.frontend');
 
-        if ($pageVersion && empty($request->getPart(1))) {
+
+
+       $auth = new Auth($requestHelper, $appConfig);
+       $auth->auth($this->container->get(Orm::class));
+
+        if ($pageVersion && empty($requestHelper->getPart(1))) {
             $user = User::factory();
             if ($user->isAuthorized() && $user->isAdmin()) {
                 $pageData = array_merge(
                     $pageData,
-                    Model::factory('Vc')->getData('page', $pageData['id'], $pageVersion)
+                    $orm->model('Vc')->getData('page', $pageData['id'], $pageVersion)
                 );
                 $showRevision = true;
             }
         }
 
         if ($pageData['published'] == false && !$showRevision) {
-            $response->redirect('/');
+            $responseHelper->redirect('/');
         }
 
         $page = Page::factory();
@@ -96,15 +107,17 @@ class Cms extends Router
          * Check if controller attached
          */
         if (strlen($pageData['func_code'])) {
-            $fModules = Config::factory(Config\Factory::File_Array, $this->appConfig->get('frontend_modules'));
+            $fModules = Config::factory(Config\Factory::File_Array, $appConfig->get('frontend_modules'));
 
             if ($fModules->offsetExists($pageData['func_code'])) {
                 $controllerConfig = $fModules->get($pageData['func_code']);
-                $this->runController($controllerConfig['class'], $request->getPart(1), $request, $response);
+                $this->runController($controllerConfig['class'], $requestHelper->getPart(1), $requestHelper, $responseHelper);
             }
         } else {
-            $this->runController($this->frontendConfig->get('default_controller'), null, $request, $response);
+            $this->runController($frontendConfig->get('default_controller'), null, $requestHelper, $responseHelper);
         }
+
+        return $responseHelper->getPsrResponse();
     }
 
     protected function applyPageData(array $data, Page $page) : void
@@ -152,18 +165,6 @@ class Cms extends Router
             'default_blocks' => $data['default_blocks'],
             'func_code' => $data['func_code']
         ]);
-    }
-
-    /**
-     * Run controller
-     * @param string $controller
-     * @param null|string $action
-     * @param Request $request
-     * @param Response $response
-     */
-    public function runController(string $controller, ?string $action, Request $request, Response $response): void
-    {
-        parent::runController($controller, $action, $request, $response);
     }
 
     protected function getModulesRoutes()

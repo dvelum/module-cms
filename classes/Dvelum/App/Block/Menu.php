@@ -1,6 +1,7 @@
 <?php
 namespace Dvelum\App\Block;
 
+use Dvelum\Template\Engine\EngineInterface;
 use Dvelum\View;
 use Dvelum\Orm\Model;
 
@@ -29,7 +30,12 @@ class Menu extends AbstractAdapter
         /**
          * @var \Dvelum\App\Model\Menu
          */
-		return Model::factory('Menu')->getCachedMenuLinks($this->config['menu_id']);
+		return $this->orm->model('Menu')->getCachedMenuLinks(
+		    $this->orm->model('Menu_Item'),
+            $this->orm->model('Page'),
+            $this->orm->model('Medialib'),
+            $this->config['menu_id']
+        );
 	}
 
 	/**
@@ -37,9 +43,8 @@ class Menu extends AbstractAdapter
 	 */
 	public function render() : string
 	{
+	    $tpl = $this->templateFactory->getTemplate();
 		$data = $this->collectData();
-
-		$tpl = View::factory();
         $tpl->setData([
             'config' => $this->config,
             'place' => $this->config['place'],
@@ -48,7 +53,7 @@ class Menu extends AbstractAdapter
         /**
          * @var \Dvelum\App\Model\Page $pageModel
          */
-        $pageModel =  Model::factory('Page');
+        $pageModel =  $this->orm->model('Page');
         if(static::DEPENDS_ON_PAGE){
             $tpl->set('page' , \Dvelum\Page\Page::factory());
             $tpl->set('pagesTree' ,$pageModel->getTree());

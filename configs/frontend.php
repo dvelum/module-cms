@@ -6,7 +6,7 @@ return [
    * 'Path' — the router based on the file structure of client controllers.
    * 'Config' - using frontend modules configuration
    */
-    'router' => 'Cms', // 'Cms','Path','Config'
+    'router' => \Dvelum\App\Router\Cms::class, // 'Cms','Path','Config'
     // Default Frontend Controller
     'default_controller' => '\\Dvelum\\App\\Frontend\\Cms\\Index\\Controller',
 ];

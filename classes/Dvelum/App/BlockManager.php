@@ -21,8 +21,11 @@ declare(strict_types=1);
 
 namespace Dvelum\App;
 
+use Dvelum\App\Model\Blocks;
 use Dvelum\Orm\Model;
 use Dvelum\Config;
+use Dvelum\Orm\Orm;
+use Dvelum\Template\Service;
 use Dvelum\Utils;
 use Dvelum\Cache\CacheInterface;
 
@@ -41,10 +44,7 @@ class BlockManager
      * @var bool $hardCache
      */
     protected $hardCache = false;
-    /**
-     * @var CacheInterface|bool  $cache
-     */
-    protected $cache = false;
+
 
 
     protected $map = [];
@@ -56,12 +56,22 @@ class BlockManager
     const DEFAULT_BLOCK = '\\Dvelum\\App\\Block\\Simple';
     const CACHE_KEY = 'blockmanager_data';
 
+    private Orm $orm;
+    private ?CacheInterface $cache;
+    private Service $templateFactory;
+
+
+    public function __construct(Orm $orm, Service $templateFactory, ?CacheInterface $cache){
+        $this->orm = $orm;
+        $this->templateFactory = $templateFactory;
+        $this->cache = $cache;
+    }
     /**
      * Set cache adapter for the current object
-     * @param CacheInterface $cache
+     * @param ?CacheInterface $cache
      * @return void
      */
-    public function setCache(CacheInterface $cache) : void
+    public function setCache(?CacheInterface $cache) : void
     {
         $this->cache = $cache;
     }
@@ -72,7 +82,7 @@ class BlockManager
      */
     public function disableCache() : void
     {
-        $this->cache = false;
+        $this->cache = null;
     }
 
     /**
@@ -171,11 +181,11 @@ class BlockManager
 
     /**
      * Get blocks map config
-     * @param string $mapPageId
+     * @param int $mapPageId
      * @param integer | boolean  $version, optional default false
      * @return  array
      */
-    protected function getBlocksMap($mapPageId , $version = false) : array
+    protected function getBlocksMap(int $mapPageId , $version = false) : array
     {
         $data = false;
         $pageKey = $this->hashPage($this->pageId);
@@ -186,11 +196,12 @@ class BlockManager
                 return $data;
         }
         /**
-         * @var \Model_Blocks $blocksModel
+         * @var Blocks $blocksModel
          */
-        $blocksModel = Model::factory('Blocks');
+        $blocksModel = $this->orm->model('Blocks');
+        $mappingModel = $this->orm->model('Blockmapping');
 
-        $data = $blocksModel->getPageBlocks($mapPageId , $version);
+        $data = $blocksModel->getPageBlocks($mappingModel, $mapPageId , $version);
 
         if(!$data)
             $data = [];
@@ -248,7 +259,7 @@ class BlockManager
             }
         }
 
-        $blockObject = new $class($config);
+        $blockObject = new $class($config, $this->orm, $this->templateFactory);
 
         if(!($blockObject instanceof \Block) && !($blockObject instanceof \Dvelum\App\Block\AbstractAdapter))
             trigger_error('Invalid block class');
@@ -328,7 +339,7 @@ class BlockManager
         if(!$this->cache)
             return;
 
-        $blockModel = Model::factory('Blocks');
+        $blockModel = $this->orm->model('Blocks');
         $blockItems = $blockModel->query()->filters([
             'is_system' => 1 ,
             'sys_name' => $blockClass
@@ -346,7 +357,7 @@ class BlockManager
         if(!$this->cache)
             return;
 
-        $blockModel = Model::factory('Blocks');
+        $blockModel = $this->orm->model('Blocks');
         $blockItems = $blockModel->query()->filters(['id' => $blockId])->fetchAll();
         $this->invalidateBlockList($blockItems);
     }
@@ -361,7 +372,7 @@ class BlockManager
         if(!$this->cache)
             return;
 
-        $blockModel = Model::factory('Blocks');
+        $blockModel = $this->orm->model('Blocks');
         $blockItems = $blockModel->query()->filters([
             'menu_id' => $menuId ,
             'is_menu' => 1
@@ -382,7 +393,7 @@ class BlockManager
         /**
          * @var \Dvelum\App\Model\Page $pagesModel
          */
-        $pagesModel = Model::factory('Page');
+        $pagesModel = $this->orm->model('Page');
         $ids = $pagesModel->getPagesWithDefaultMap();
 
         if(empty($ids))
@@ -425,7 +436,7 @@ class BlockManager
             return;
 
         $blockIds = Utils::fetchCol('id' , $blockItems);
-        $blockMapping = Model::factory('Blockmapping');
+        $blockMapping = $this->orm->model('Blockmapping');
 
         $pageBlocks = $blockMapping->query()->filters(['block_id' => $blockIds])->fields(
             [
@@ -457,7 +468,7 @@ class BlockManager
         /**
          * @var \Model_Page $pagesModel
          */
-        $pagesModel = Model::factory('Page');
+        $pagesModel = $this->orm->model('Page');
         $defaultMapped = $pagesModel->getPagesWithDefaultMap();
 
         /*

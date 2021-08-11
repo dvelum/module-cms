@@ -21,7 +21,8 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Frontend\Cms;
 
-use Dvelum\{App, Config, Config\ConfigInterface, Lang, Page\Page, Request, Response, Service, Orm\Model, Resource};
+use Dvelum\{App, Config, Config\ConfigInterface, Lang, Orm\Orm, Page\Page, Request, Response, Orm\Model, Resource};
+use Psr\Container\ContainerInterface;
 
 class Controller extends App\Controller
 {
@@ -30,7 +31,7 @@ class Controller extends App\Controller
      */
     protected $frontendConfig;
     /**
-     * @var Lang
+     * @var Lang\Dictionary
      */
     protected $lang;
     /**
@@ -38,12 +39,12 @@ class Controller extends App\Controller
      */
     protected $page;
 
-    public function __construct(Request $request, Response $response)
+    public function __construct(Request $request, Response $response, ContainerInterface $container)
     {
         $this->page = Page::factory();
-        $this->frontendConfig = Config::storage()->get('frontend.php');
-        $this->lang = Lang::lang();
-        parent::__construct($request, $response);
+        $this->frontendConfig = $container->get(Config\Storage\StorageInterface::class)->get('frontend.php');
+        $this->lang = $container->get(Lang::class)->lang();
+        parent::__construct($request, $response, $container);
     }
 
     /**
@@ -63,7 +64,7 @@ class Controller extends App\Controller
         /**
          * @var App\BlockManager $blockManager
          */
-        $blockManager = Service::get('blockManager');
+        $blockManager = $this->container->get(App\BlockManager::class);
 
         if ($vers) {
             $blockManager->disableCache();
@@ -80,7 +81,8 @@ class Controller extends App\Controller
             'path' => $this->page->getThemePath(),
             'blockManager' => $blockManager,
             'resource' => Resource::factory(),
-            'pagesTree' => Model::factory('Page')->getTree()
+            'request' => $this->request,
+            'pagesTree' => $this->container->get(Orm::class)->model('Page')->getTree()
         ], false);
     }
 }

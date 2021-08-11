@@ -21,6 +21,7 @@ declare(strict_types=1);
 
 namespace Dvelum\App\Model;
 
+use Dvelum\App\Data\Api\Request;
 use Dvelum\Orm\Model;
 
 class Menu extends Model
@@ -32,7 +33,7 @@ class Menu extends Model
         }
     }
 
-    public function getCachedMenuLinks($menuId) : array
+    public function getCachedMenuLinks(Model $itemModel, Model $pageModel, Model $mediaModel, $menuId) : array
     {
         $menuRecord = $this->getCachedItem($menuId);
         $cacheKey = '';
@@ -51,8 +52,6 @@ class Menu extends Model
         if ($list !== false) {
             return $list;
         }
-
-        $itemModel = Model::factory('Menu_Item');
 
         $list = $itemModel->query()
             ->params([
@@ -80,7 +79,7 @@ class Menu extends Model
             return [];
         }
 
-        $list = $this->addUrls($list);
+        $list = $this->addUrls($pageModel, $mediaModel, $list);
 
         if ($this->cache) {
             $this->cache->save($list, $cacheKey);
@@ -89,16 +88,15 @@ class Menu extends Model
         return $list;
     }
 
-    protected function addUrls(array $menuItems) : array
+    protected function addUrls(Model $pageModel, Model $mediaModel, array $menuItems) : array
     {
-        $request = \Dvelum\Request::factory();
-        $codes = Model::factory('Page')->getCachedCodes();
+
+        $codes = $pageModel->getCachedCodes();
         /**
          * @var Medialib $mediaModel
          */
-        $mediaModel = Model::factory('Medialib');
-        $resourceIds = array();
-        $resourcesData = array();
+        $resourceIds = [];
+        $resourcesData = [];
 
         foreach ($menuItems as $k => &$v) {
             if (isset($codes[$v['page_id']])) {
@@ -127,9 +125,9 @@ class Menu extends Model
             switch ($v['link_type']) {
                 case 'page' :
                     if ($v['page_code'] == 'index') {
-                        $v['link_url'] = $request->url(['']);
+                        $v['link_url'] = '/';
                     } else {
-                        $v['link_url'] = $request->url([$v['page_code']]);
+                        $v['link_url'] = '/' . $v['page_code'];
                     }
                     break;
                 case 'url' :

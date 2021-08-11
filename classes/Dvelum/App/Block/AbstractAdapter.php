@@ -19,6 +19,10 @@
 declare(strict_types=1);
 
 namespace Dvelum\App\Block;
+use Dvelum\Orm\Orm;
+use Dvelum\Template\Engine\EngineInterface;
+use Dvelum\Template\Service;
+
 /**
  * Base class for page blocks
  * @author Kirill Yegorov 2011 DVelum project
@@ -48,13 +52,18 @@ abstract class AbstractAdapter
      */
     const DEPENDS_ON_PAGE = false;
 
+    protected Orm $orm;
+    protected Service $templateFactory;
+
     /**
      * Block constructor
      * @param array $config - block config
      */
-    public function __construct(array $config)
+    public function __construct(array $config, Orm $orm, Service $template)
     {
         $this->config = $config;
+        $this->templateFactory = $template;
+        $this->orm = $orm;
 
         if(!isset($config['params']) || !strlen($config['params']))
             return;
